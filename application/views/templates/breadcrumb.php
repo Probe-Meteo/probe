@@ -18,9 +18,11 @@
  * )
  */
 ?>
-<div class="navbar navbar-inverse navbar-fixed-top">
-    <?php if (isset($breadcrumb)): ?>
-    <ul class="breadcrumb">
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <?php if (isset($breadcrumb)): ?>
+    <ul class="nav breadcrumb">
     <?php foreach ($breadcrumb as $key => $step): ?>
         <?php if (is_array($step)): ?>
         <li class="<?=isset($step['status']) ? $step['status'] : 'disabled';?>">
@@ -36,26 +38,32 @@
     </ul>
     <?php endif ?>
 
-    <ul id="access-profile" class="breadcrumb">
-        <li>
-            <a href="/profile/me"><?=i18n('profile.request.label')?></a>
-            <span class="divider">|</span>
-        </li>
-        <li>
-            <a href="/profile/settings"><?=i18n('profile.request:settings.label')?></a>
-            <span class="divider">|</span>
-        </li>
-        <li>
-            <?php if ($isAuthentified):?>
-                <a href="/logout"><?=i18n('logout.request.label')?></a>
-            <?php else:?>
-                <a href="/login"><?=i18n('login.request.label')?></a>
-            <?php endif;?>
+    <ul id="access-profile" class="breadcrumb nav pull-right">
+        <li class="divider-vertical"></li>
+        <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                <?=i18n('profile.request:settings.label')?> <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+                <li>
+                    <a href="/profile/me"><?=i18n('profile.request.label')?></a>
+                </li>
+                <li>
+                    <a href="/profile/settings"><?=i18n('profile.request:settings.label')?></a>
+                </li>
+                <li class="divider"></li>
+<!--                <li class="nav-header">Nav header</li-->
+                <li>
+                    <?php if ($isAuthentified):?>
+                        <a href="/logout"><?=i18n('logout.request.label')?></a>
+                    <?php else:?>
+                        <a href="/login"><?=i18n('login.request.label')?></a>
+                    <?php endif;?>
+                </li>
+            </ul>
         </li>
     </ul>
-        <ul class="nav pull-right">
-        <li><a href="³" class="has_bottom_tooltip"><i class="icon-globe"></i></a></li>
-        <li><a href="#" class="has_bottom_tooltip"><i class="icon-user"></i></a></li>
-        <li><a href="#" class="has_bottom_tooltip"><i class="icon-wrench"></i></a></li>
-    </ul>
+</div>
+
+    </div>
 </div>
