@@ -26,7 +26,7 @@
      * @var $author string
      */
     ?>
-    <title><?=$title?> - <?=$this->config->item('page.title:suffix.metadata')?></title>
+    <title><?=$title?> - <?=$page_title_suffix?></title>
     <meta name="description" content="<?=$description?>">
     <meta name="author" content="<?=$author?>">
 
