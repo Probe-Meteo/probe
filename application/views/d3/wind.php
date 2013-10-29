@@ -140,36 +140,6 @@
     .legend .val, .legend .date {
         text-anchor:end;
     }
-    .sensitive {
-        opacity: 0;
-    }
-    /*    .line {
-        fill: none;
-        stroke-width: 1px;
-    }
-
-    .axis line,.axis path {
-        fill: none;
-        stroke: #000;
-        stroke-width: 1px;
-        shape-rendering: crispEdges;
-    }*/
-
-
-
-    /*    .line {
-        fill: none;
-        stroke: #000;
-        stroke-width: 1px;
-        shape-rendering: crispEdges;
-    }*/
-
-    /*    .axis line,.axis path {
-        fill: none;
-        stroke: #000;
-        stroke-width: 1px;
-        shape-rendering: crispEdges;
-    }*/
     .arrow:hover>.hair, .arrow:hover>.marker {
         stroke: #E6550D;
         stroke-width: 2px;
@@ -210,12 +180,12 @@
     }
     .sensitive {
         /*display: none;*/
-        opacity: 0;
+        opacity: 0.01;
         /*visibility: hidden;*/
         }
 
 
-    .stepPetalsBox .sensitive:hover + .petals {
+    .hoverBox .sensitive:hover + .petals {
         visibility: visible;
         opacity: .8;
         zoom: 2;
@@ -223,7 +193,6 @@
         -webkit-transition:visibility 0s linear;
         /*shape-rendering: crispEdges;*/
         }
-
     .petals{
         fill: #58e;
         stroke: #000;

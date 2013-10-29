@@ -85,7 +85,7 @@ class Data extends CI_Controller {
 	*/
 	function index() {
 		where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,func_get_args());
-
+		$this->dl_json ($this->dataReader->index());
 	}
 
 /**

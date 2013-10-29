@@ -187,7 +187,8 @@ function timeSeriesChart_histoRose() {
                 this.selectAll('.sensitive')
                     .attr("x", function(d) {return xScale(d.period[0]); })
                     .attr("y", -40) // function(d) { return yScale(0); })
-                    .attr("width", function(d) {return xScale(d.period[1])-xScale(d.period[0])+1; })
+                    .attr("width", function(d) {
+                        return xScale(d.period[1])-xScale(d.period[0])+1; })
                     .attr("height", 80)
                     .on("click", function(d) { return onClickAction(d); });
                 this.selectAll('.sensitive')
@@ -207,8 +208,12 @@ function timeSeriesChart_histoRose() {
                 this.selectAll('.sensitive title').text(function(d) {
                                 return toHumanDate(d.date)+"\nEach item for "+dataheader.step+" min";
                             });
+                this.selectAll('.petals')
+                    //.attr("x", function(d) {return xScale(d.period[0]); })
+                    .attr("transform", function(d) { return "translate(" + (xScale(d.period[1])+(xScale(d.period[1])-xScale(d.period[0]))/2) + ", 0)"; } );
+
                 return this;
-            }  
+            }
             g.drawAxis = function() {
                 // chose the possition of x-Axis
                 if (0<yScale.domain()[0])
@@ -246,14 +251,16 @@ function timeSeriesChart_histoRose() {
 ,'T'),
             function(data2add) {
                 console.TimeStep('load Data Zoom');
-                data2add = d3.entries(data2add.data).map(function(d, i) {
-                    var date=dateParser.call(data2add, d, i);
-                    console.log('period n est pas dynamique');
+                data2add = d3.entries(data2add.data)
+                dataheader.step = (dateParser(data2add[data2add.length-1]) - dateParser(data2add[0]))/(data2add.length-1);
+
+                data2add = data2add.map(function(d, i) {
+                    var date=dateParser(d);
                     return {
                         date:date,
                         period:[
-                            new Date(date.getTime()-1),
-                            new Date(date.getTime()+1)
+                            new Date(date.getTime()-(dataheader.step/2)),
+                            new Date(date.getTime()+(dataheader.step/2))
                         ],
                         rose:rose.call(data2add, d, i)
                     };
@@ -350,7 +357,7 @@ function timeSeriesChart_histoRose() {
         if (!arguments.length) return dateParser;
         if (typeof _ === "string") {
             timeFormat = d3.time.format(_);
-            dateParser = function(d) { return timeFormat.parse (d.key); };
+            dateParser = function(d) {return timeFormat.parse (d.key); };
         } else dateParser = _;
         return chart;
     };

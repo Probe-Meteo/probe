@@ -21,7 +21,20 @@
 
 <?php if ($viewer === true) : ?>
     <script src="/resources/js/libs/d3.v3.js"></script>
-    <script src="/resources/js/binders/<?=$dataBinder;?>.js"></script>
+    <?php
+      if ( isset($dataBinder) && is_file("./resources/js/binders/".$dataBinder.".js") )
+      {
+          ?>
+            <script src="/resources/js/binders/<?=$dataBinder;?>.js"></script>
+          <?
+      }
+      else
+      {
+          ?>
+            <script src="/resources/js/binders/curves.js"></script>
+          <?
+      }
+    ?>
     <script>
         // all binders should expose a function named 'probeViewer'
         $(document).ready(

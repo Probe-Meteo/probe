@@ -27,7 +27,15 @@ class dao_data extends CI_Model {
     * @param 
     */
     function index(){
-
+        where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,func_get_args());
+        $query = "SELECT * FROM `TR_SENSOR` LIMIT 0 , 100";
+        $query_result = $this->dataDB->query($query);
+        $brut = $query_result->result_array($query_result);
+        // $reformated = null;
+        // foreach ($brut as $Sensor) {
+        //     $reformated [$Sensor['key']] = $Sensor['value'];
+        // }
+        return $brut;
     }
 /**
 construit la liste des capteur et de leur ID

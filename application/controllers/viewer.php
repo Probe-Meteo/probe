@@ -129,6 +129,7 @@ class viewer extends CI_Controller
 
         $page = new Page_manager();
 
+        $page->addData('viewer', true);
         $page->addMetadata('list-view');
         $page->addData('breadcrumb', $this->_breadcrumb['list-viewer']);
         $page->addData('list', array_map(array($this, 'prepareViewList'), $scannedDir));
