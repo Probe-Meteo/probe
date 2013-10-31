@@ -119,3 +119,7 @@ i18n('breadcrumb.title.metadata');
 i18n('breadcrumb.description.metadata');
 i18n('global.title.metadata');
 i18n('global.description.metadata');
+i18n('configuration-dashboard.title.metadata');
+i18n('configuration-dashboard.description.metadata');
+i18n('configuration-station.0.label');
+i18n('configuration-station.0.placeholder');

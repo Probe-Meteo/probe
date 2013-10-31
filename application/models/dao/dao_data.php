@@ -82,15 +82,16 @@ this functione estimate the recommanded granularity between 2 date for retunr 10
             FROM  `".$this->SEN_TABLE."` 
             WHERE SEN_ID = ".$this->SEN_ID."
                 AND utc >= '$since'
-                AND utc < '$to'";
-
+                AND utc < '$to'
+            ";
+var_export($queryString);
         $query_result = $this->dataDB->query($queryString);
 
-        list($first, $last, $count, $min, $max, $avg, $sum) = array_values( end($query_result->result_array($query_result)) );
+        list( $first, $last, $count, $min, $max, $avg, $sum) = array_values( end($query_result->result_array($query_result)) );
 
         $GranularityForNbrValue = round((strtotime($last)-strtotime($first)) / $count * ($count/$nbr) / 60 , 1);
 
-        return array ('step'=>$GranularityForNbrValue<5 ? 5 : $GranularityForNbrValue, 'count'=>$count, 'min'=>$min, 'max'=>$max, 'avg'=>$avg, 'sum'=>$sum);
+        return array ('step'=>$GranularityForNbrValue<5 ? 5 : $GranularityForNbrValue,  'first'=>$first, 'last'=>$last, 'count'=>$count, 'min'=>$min, 'max'=>$max, 'avg'=>$avg, 'sum'=>$sum);
     }
 
 
@@ -181,7 +182,7 @@ this functione estimate the recommanded granularity between 2 date for retunr 10
         GROUP BY UTC_grp
         ORDER BY UTC_grp asc
         LIMIT 0 , 10000";
-var_export($queryString);
+
         $query_result = $this->dataDB->query($queryString);
         var_export($query_result);
         $brut = $query_result->result_array($query_result);
