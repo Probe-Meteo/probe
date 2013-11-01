@@ -166,7 +166,7 @@ function formulaConverter (grandeur, outputUnit)
         },
         Evapotranspiration:{
         	// ref: 'http://en.wikipedia.org/wiki/Evapotranspiration'
-            'ET':      { name: 'Evapotranspiration',        symbol: 'ET',		formula: function(SI){if (!arguments.length) return 'ET'; return +SI;}},	// ok
+            'mm':      { name: 'Evapo Transpiration',        symbol: 'mm',		formula: function(SI){if (!arguments.length) return 'mm'; return +SI;}},	// ok
         },
         angle:{
         	// ref: 'http://en.wikipedia.org/wiki/Evapotranspiration'

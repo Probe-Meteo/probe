@@ -13,11 +13,25 @@
 
 ?>
 <div id="resizable" class="ui-widget-content">
-    <h4 class="ui-widget-header">Resizable</h4>
-    <div id="barSvgArea" style='border:solid red 1px;height:160px;'>
+    <h4 class="ui-widget-header">Sum Historical Chart</h4>
+    <p>tesr<span id="barSvgArea">
         <!-- d3 content should be -dynamically- placed here -->
-    </div>
-</div>
+    </span> truc <span id="barSvgArea0">
+        <!-- d3 content should be -dynamically- placed here -->
+    </span>sdf <span id="barSvgArea1">
+        <!-- d3 content should be -dynamically- placed here -->
+    </span>sdf <span id="barSvgArea2">
+        <!-- d3 content should be -dynamically- placed here -->
+    </span>sdf <span id="barSvgArea3">
+        <!-- d3 content should be -dynamically- placed here -->
+    </span>sdf <span id="barSvgArea4">
+        <!-- d3 content should be -dynamically- placed here -->
+    </span>dsfh <span id="barSvgArea5">
+        <!-- d3 content should be -dynamically- placed here -->
+    </span></p>
+    <div id="barSvgArea99" style='height:160px;'>
+        <!-- d3 content should be -dynamically- placed here -->
+    </div></div>
 
 <style>
     svg {
@@ -49,11 +63,27 @@
     .sensitive {
         opacity: 0;
     }
+    .legend .val, .legend .date {
+        text-anchor:end;
+    }
+    .Infos {
+        text-anchor:middle;
+    }
+    .legend .legend_min, .legend .legend_avg, .legend .legend_max, .legend .legend_sum { 
+        font-size: 8px;
+    }
     </style>
 
 <script>
   function probeViewer(){
-    include_barChart("#barSvgArea", '<?=$station?>', '<?=$sensor?>', 1900);
+    include_barChart_n("#barSvgArea", '<?=$station?>', '<?=$sensor?>', 141);
+    include_barChart_n("#barSvgArea0", '<?=$station?>', '<?=$sensor?>', 153);
+    include_barChart_n("#barSvgArea1", '<?=$station?>', '<?=$sensor?>', 161);
+    include_barChart_n("#barSvgArea2", '<?=$station?>', '<?=$sensor?>', 162);
+    include_barChart_n("#barSvgArea2", '<?=$station?>', '<?=$sensor?>', 163);
+    include_barChart_n("#barSvgArea4", '<?=$station?>', '<?=$sensor?>', 164);
+    include_barChart_n("#barSvgArea5", '<?=$station?>', '<?=$sensor?>', 165);
+    include_barChart("#barSvgArea99", '<?=$station?>', '<?=$sensor?>', 1900);
   }
   </script>
 <script src="/resources/js/ProbeTools.js"></script>

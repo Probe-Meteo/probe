@@ -24,21 +24,6 @@
             <!-- d3 content should be -dynamically- placed here -->
         </span>
     </p>
-    <span id="curveSvgArea1">
-        <!-- d3 content should be -dynamically- placed here -->
-    </span>
-    <span id="curveSvgArea2">
-        <!-- d3 content should be -dynamically- placed here -->
-    </span>
-    <span id="curveSvgArea3">
-        <!-- d3 content should be -dynamically- placed here -->
-    </span>
-    <span id="curveSvgArea4">
-        <!-- d3 content should be -dynamically- placed here -->
-    </span>
-    <span id="curveSvgArea5">
-        <!-- d3 content should be -dynamically- placed here -->
-    </span>
     <span id="curveSvgArea6">
         <!-- d3 content should be -dynamically- placed here -->
     </span>
@@ -77,6 +62,13 @@
     .legend .val, .legend .date {
         text-anchor:end;
     }
+    .legend .Infos {
+        text-anchor:middle;
+    }
+    .legend .legend_min, .legend .legend_avg, .legend .legend_max { 
+        font-size: 8px;
+    }
+
     .sensitive {
         opacity: 0;
     }

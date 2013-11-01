@@ -89,7 +89,8 @@ var_export($queryString);
 
         list( $first, $last, $count, $min, $max, $avg, $sum) = array_values( end($query_result->result_array($query_result)) );
 
-        $GranularityForNbrValue = round((strtotime($last)-strtotime($first)) / $count * ($count/$nbr) / 60 , 1);
+        // $GranularityForNbrValue = round((strtotime($last)-strtotime($first)) / $count * ($count/$nbr) / 60 , 1);
+        $GranularityForNbrValue = (strtotime($last)-strtotime($first)) / $count * ($count/$nbr) / 60;
 
         return array ('step'=>$GranularityForNbrValue<5 ? 5 : $GranularityForNbrValue,  'first'=>$first, 'last'=>$last, 'count'=>$count, 'min'=>$min, 'max'=>$max, 'avg'=>$avg, 'sum'=>$sum);
     }

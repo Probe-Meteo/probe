@@ -123,3 +123,5 @@ i18n('configuration-dashboard.title.metadata');
 i18n('configuration-dashboard.description.metadata');
 i18n('configuration-station.0.label');
 i18n('configuration-station.0.placeholder');
+i18n('cumul.title.metadata');
+i18n('cumul.description.metadata');
