@@ -189,8 +189,8 @@ function timeSeriesChart_curves() {
                     .text(formatVal(data[data.length-1].val));
 
                 var Infos = function() {return "Min : "+formatVal(toHumanUnit(dataheader.min), 2)+
-                " - Average : "+formatVal(toHumanUnit(dataheader.avg), 2)+
-                " - Max : "+formatVal(toHumanUnit(dataheader.max), 2);},
+                "  —  Average : "+formatVal(toHumanUnit(dataheader.avg), 2)+
+                "  —  Max : "+formatVal(toHumanUnit(dataheader.max), 2);},
                     legendSum = legend.append('text')
                         .attr("class","Infos")
                         .attr('x', legendXleft/2)
@@ -304,15 +304,24 @@ function timeSeriesChart_curves() {
                 var legendmax = legend.append('text')
                     .attr("class","legend_max")
                     .attr("y", (6))
-                    .text('↑ '+formatVal(toHumanUnit(dataheader.max), 1));
+                    .text('↑ '+formatVal(toHumanUnit(dataheader.max), 1))
+                    .append('title')
+                        .text(formatVal(toHumanUnit(dataheader.max), 2));
+
                 var legendavg = legend.append('text')
                     .attr("class","legend_avg")
                     .attr("y", (height+6)/2)
-                    .text('↔ '+formatVal(toHumanUnit(dataheader.avg), 1));
+                    .text('↔ '+formatVal(toHumanUnit(dataheader.avg), 1))
+                    .append('title')
+                        .text(formatVal(toHumanUnit(dataheader.avg), 2));
+
                 var legendmin = legend.append('text')
                     .attr("class","legend_min")
                     .attr("y", (height-1))
-                    .text('↓ '+formatVal(toHumanUnit(dataheader.min), 1));
+                    .text('↓ '+formatVal(toHumanUnit(dataheader.min), 1))
+                    .append('title')
+                        .text(formatVal(toHumanUnit(dataheader.min), 2));
+
 
             }
             // Update the outer dimensions.
@@ -467,7 +476,7 @@ function timeSeriesChart_curves() {
         if (!arguments.length) return nude;
         nude = _;
         if (_) {
-            margin = {top: 0, left: 0, bottom: 0, right: 40};
+            margin = {top: 0, left: 0, bottom: 0, right: 50};
         }
         return chart;
     };

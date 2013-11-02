@@ -266,7 +266,7 @@ function timeSeriesChart_barChart() {
                                 .attr("height", function(d) {return Math.abs(xPos-Y(d));})
                                 .select('title')
                                 .text(function(d) {
-                                        return formatVal(+d.val)+" (in "+dataheader.step+"min)\nFrom : "+toHumanDate(d.period[0])+"\nto : "+toHumanDate(d.period[1]);
+                                        return formatVal(+d.val)+"\nFrom : "+toHumanDate(d.period[0])+"\nto : "+toHumanDate(d.period[1]);
                                     });
 
                     return this;
@@ -281,15 +281,21 @@ function timeSeriesChart_barChart() {
                 var legendmax = legend.append('text')
                     .attr("class","legend_max")
                     .attr("y", (6))
-                    .text('↑ '+formatVal(toHumanUnit(dataheader.max), 1));
+                    .text('↑ '+formatVal(toHumanUnit(dataheader.max), 1))
+                    .append('title')
+                        .text('↑ max:'+formatVal(toHumanUnit(dataheader.max), 2));
                 var legendavg = legend.append('text')
                     .attr("class","legend_avg")
                     .attr("y", (height+6)/2)
-                    .text('↔ '+formatVal(toHumanUnit(dataheader.avg), 2));
+                    .text('↔ '+formatVal(toHumanUnit(dataheader.avg), 2))
+                    .append('title')
+                        .text('↔ Avg:'+formatVal(toHumanUnit(dataheader.avg), 3));
                 var legendmin = legend.append('text')
                     .attr("class","legend_min")
                     .attr("y", (height-2))
-                    .text("∑ "+formatVal(toHumanUnit(dataheader.sum), 0));
+                    .text("∑ "+formatVal(toHumanUnit(dataheader.sum), 0))
+                    .append('title')
+                        .text("∑ Sum:"+formatVal(toHumanUnit(dataheader.sum), 2));
 
             }
         });
