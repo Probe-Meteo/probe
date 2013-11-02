@@ -7,51 +7,52 @@
 * @license  http://creativecommons.org/licenses/by-nc-sa/3.0/legalcode CC-by-nc-sa-3.0
 * @link     http://probe-meteo.com/doc
 */
-    var Day_30 = new Date();
-    Day_30.setDate(Day_30.getDate() -30);
-    var Tomorow = new Date();
-    Tomorow.setDate(Tomorow.getDate() +1);
 
-function include_barChart_n(container, station, sensor, XdisplaySizePxl)
-{
-    var formatDate = d3.time.format("%Y-%m-%d %H:%M");
+    // var Day_30 = new Date();
+    // Day_30.setDate(Day_30.getDate() -30);
+    // var Tomorow = new Date();
+    // Tomorow.setDate(Tomorow.getDate() +1);
 
-    // on definie notre objet au plus pres de notre besoin.
-    var barChart = timeSeriesChart_barChart()
-                        .width(XdisplaySizePxl)
-                        .height(40)
-                        .ajaxUrl("/data/cumul")
-                        // .date(function(d) { return formatDate.parse (d.date); })
-                        .dateParser("%Y-%m-%d %H:%M")
-                        .dateDomain([formatDate(Day_30), formatDate(Tomorow)])
-                        .station(station)
-                        .sensor(sensor)
-                        .onClickAction(function(d, i) { console.error (d, i); })
-                        .toHumanDate(formulaConverter ('strDate', 'ISO'))
-                        .Color()
-                        .nude(true);
+// function include_barChart_n(container, station, sensor, XdisplaySizePxl)
+// {
+//     var formatDate = d3.time.format("%Y-%m-%d %H:%M");
 
-    barChart.loader(container);
-}
-function include_barChart(container, station, sensor, XdisplaySizePxl)
-{
-    var formatDate = d3.time.format("%Y-%m-%d %H:%M");
+//     // on definie notre objet au plus pres de notre besoin.
+//     var barChart = timeSeriesChart_barChart()
+//                         .width(XdisplaySizePxl)
+//                         .height(40)
+//                         .ajaxUrl("/data/cumul")
+//                         // .date(function(d) { return formatDate.parse (d.date); })
+//                         .dateParser("%Y-%m-%d %H:%M")
+//                         .dateDomain([formatDate(Day_30), formatDate(Tomorow)])
+//                         .station(station)
+//                         .sensor(sensor)
+//                         .onClickAction(function(d, i) { console.error (d, i); })
+//                         .toHumanDate(formulaConverter ('strDate', 'ISO'))
+//                         .Color()
+//                         .nude(true);
 
-    // on definie notre objet au plus pres de notre besoin.
-    var barChart = timeSeriesChart_barChart()
-                        .width(XdisplaySizePxl)
-                        .ajaxUrl("/data/cumul")
-                        // .date(function(d) { return formatDate.parse (d.date); })
-                        .dateParser("%Y-%m-%d %H:%M")
-                        .dateDomain([formatDate(Day_30), formatDate(Tomorow)])
-                        .station(station)
-                        .sensor(sensor)
-                        .onClickAction(function(d, i) { console.error (d, i); })
-                        .toHumanDate(formulaConverter ('strDate', 'ISO'))
-                        .Color();
+//     barChart.loader(container);
+// }
+// function include_barChart(container, station, sensor, XdisplaySizePxl)
+// {
+//     var formatDate = d3.time.format("%Y-%m-%d %H:%M");
 
-    barChart.loader(container);
-}
+//     // on definie notre objet au plus pres de notre besoin.
+//     var barChart = timeSeriesChart_barChart()
+//                         .width(XdisplaySizePxl)
+//                         .ajaxUrl("/data/cumul")
+//                         // .date(function(d) { return formatDate.parse (d.date); })
+//                         .dateParser("%Y-%m-%d %H:%M")
+//                         .dateDomain([formatDate(Day_30), formatDate(Tomorow)])
+//                         .station(station)
+//                         .sensor(sensor)
+//                         .onClickAction(function(d, i) { console.error (d, i); })
+//                         .toHumanDate(formulaConverter ('strDate', 'ISO'))
+//                         .Color();
+
+//     barChart.loader(container);
+// }
 
 
 
@@ -111,10 +112,8 @@ function timeSeriesChart_barChart() {
                         ]
                     };
             });
-// console.log(data.length,(data.length)*4-3, width - margin.left - margin.right);
-if (nude)
-    margin.right = width - margin.left - ((data.length)*4-3);
-// console.log(width, width - margin.left - margin.right);
+        if (nude)
+            margin.right = width - margin.left - ((data.length)*4-3);
 
             // Update the x-scale.
             xScale
@@ -125,7 +124,6 @@ if (nude)
             yScale
                 .domain(d3.extent(data, function(d) {return +d.val; }))
                 .range([height - margin.top - margin.bottom, 0]);
-            // console.log(toHumanUnit, [toHumanUnit(dataheader.min),toHumanUnit(dataheader.max)]);
 
             // Select the svg element, if it exists.
             var svg = d3.select(this).selectAll("svg").data([data]);
@@ -172,13 +170,10 @@ if (nude)
                     .append("rect")
                         .attr("class", "bar")
                         .append("title");
-            
+    console.log(d3.select(this),g, dateDomain);
             if (!nude) {
-
-                // gEnter.append("path").attr("class", "line");
                 g.append("g").attr("class", "x axis");
                 g.append("g").attr("class", "y axis");
-
 
                 g.updateCurve = function(){
                     yScale.domain(
@@ -201,7 +196,6 @@ if (nude)
                                 .text(function(d) {
                                         return formatVal(+d.val)+" (in "+dataheader.step+"min)\nFrom : "+toHumanDate(d.period[0])+"\nto : "+toHumanDate(d.period[1]);
                                     });
-
                     return this;
                 }
                 g.drawAxis = function() {
@@ -269,7 +263,11 @@ if (nude)
                                 .attr("x", function (d) { return X(d)+1;})
                                 .attr("y", Y)
                                 .attr("width", 2)
-                                .attr("height", function(d) {return Math.abs(xPos-Y(d));});
+                                .attr("height", function(d) {return Math.abs(xPos-Y(d));})
+                                .select('title')
+                                .text(function(d) {
+                                        return formatVal(+d.val)+" (in "+dataheader.step+"min)\nFrom : "+toHumanDate(d.period[0])+"\nto : "+toHumanDate(d.period[1]);
+                                    });
 
                     return this;
                 }
@@ -401,7 +399,7 @@ if (nude)
         // on demande les infos importante au sujet de notre futur tracé
         // ces infos permettent de finir le parametrage de notre "Chart"
         // on charge les données et on lance le tracage
-        d3.tsv( ajaxUrl + "?station="+ station +"&sensor="+ sensor +"&XdisplaySizePxl="+w, //+"&Since=2013-05-30T10:00"+"&To=2013-05-31T06:00",
+        d3.tsv( ajaxUrl + "?station="+ station +"&sensor="+ sensor +"&XdisplaySizePxl="+w+"&Since="+dateDomain[0]+"&To="+dateDomain[1],
             function(data) {
                 console.TimeStep('load Data');
                 console.log(data);
@@ -415,7 +413,7 @@ if (nude)
             }
         );
 
-        d3.json( ajaxUrl + "?station="+ station +"&sensor="+ sensor +"&XdisplaySizePxl="+w+"&infos=dataheader", //&since=2013-05-30T10:00"+"&To=2013-05-31T06:00",
+        d3.json( ajaxUrl + "?station="+ station +"&sensor="+ sensor +"&XdisplaySizePxl="+w+"&infos=dataheader"+"&Since="+dateDomain[0]+"&To="+dateDomain[1],
             function(data) {
                 console.TimeStep('load Header');
                 console.log(data);
