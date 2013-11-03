@@ -77,22 +77,36 @@ this functione estimate the recommanded granularity between 2 date for retunr 10
     */
     function estimate($since='2013-01-01T00:00', $to='2037-12-31T23:59', $nbr = 1000) {
         where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,func_get_args());
+        // le JOIN dans cette requette augmente le temps de 0.1% pas plus
         $queryString = 
-        "SELECT MIN(`UTC`) AS first, MAX(`UTC`) AS last, COUNT(`UTC`) AS count, MIN(value) AS min, MAX(value) AS max, AVG(value) AS avg, SUM(value) AS sum
-            FROM  `".$this->SEN_TABLE."` 
-            WHERE SEN_ID = ".$this->SEN_ID."
-                AND utc >= '$since'
-                AND utc < '$to'
+        "SELECT
+            MIN(`".$this->SEN_TABLE."`.`UTC`) AS first,
+            MAX(`".$this->SEN_TABLE."`.`UTC`) AS last,
+            COUNT(`".$this->SEN_TABLE."`.`UTC`) AS count,
+            MIN(`".$this->SEN_TABLE."`.value) AS min,
+            MAX(`".$this->SEN_TABLE."`.value) AS max,
+            AVG(`".$this->SEN_TABLE."`.value) AS avg,
+            SUM(`".$this->SEN_TABLE."`.value) AS sum,
+            latest.VALUE as lastValue
+            FROM  `".$this->SEN_TABLE."` JOIN (SELECT `".$this->SEN_TABLE."`.SEN_ID, `".$this->SEN_TABLE."`.VALUE, `".$this->SEN_TABLE."`.UTC
+                FROM `".$this->SEN_TABLE."`
+                WHERE `".$this->SEN_TABLE."`.SEN_ID = ".$this->SEN_ID."
+                    AND `".$this->SEN_TABLE."`.utc >= '$since'
+                    AND `".$this->SEN_TABLE."`.utc < '$to'
+                ORDER BY UTC DESC
+                LIMIT 1) latest
+            WHERE `".$this->SEN_TABLE."`.SEN_ID = ".$this->SEN_ID."
+                AND `".$this->SEN_TABLE."`.utc >= '$since'
+                AND `".$this->SEN_TABLE."`.utc < '$to'
             ";
-var_export($queryString);
         $query_result = $this->dataDB->query($queryString);
 
-        list( $first, $last, $count, $min, $max, $avg, $sum) = array_values( end($query_result->result_array($query_result)) );
+        list( $first, $last, $count, $min, $max, $avg, $sum, $lastValue) = array_values( end($query_result->result_array($query_result)) );
 
         // $GranularityForNbrValue = round((strtotime($last)-strtotime($first)) / $count * ($count/$nbr) / 60 , 1);
         $GranularityForNbrValue = (strtotime($last)-strtotime($first)) / $count * ($count/$nbr) / 60;
 
-        return array ('step'=>$GranularityForNbrValue<5 ? 5 : $GranularityForNbrValue,  'first'=>$first, 'last'=>$last, 'count'=>$count, 'min'=>$min, 'max'=>$max, 'avg'=>$avg, 'sum'=>$sum);
+        return array ('step'=>$GranularityForNbrValue<5 ? 5 : $GranularityForNbrValue, 'lastValue'=>$lastValue, 'first'=>$first, 'last'=>$last, 'count'=>$count, 'min'=>$min, 'max'=>$max, 'avg'=>$avg, 'sum'=>$sum);
     }
 
 

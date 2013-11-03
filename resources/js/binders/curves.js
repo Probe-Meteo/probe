@@ -306,21 +306,21 @@ function timeSeriesChart_curves() {
                     .attr("y", (6))
                     .text('↑ '+formatVal(toHumanUnit(dataheader.max), 1))
                     .append('title')
-                        .text(formatVal(toHumanUnit(dataheader.max), 2));
+                        .text('↑ max:'+formatVal(toHumanUnit(dataheader.max), 2));
 
                 var legendavg = legend.append('text')
                     .attr("class","legend_avg")
                     .attr("y", (height+6)/2)
                     .text('↔ '+formatVal(toHumanUnit(dataheader.avg), 1))
                     .append('title')
-                        .text(formatVal(toHumanUnit(dataheader.avg), 2));
+                        .text('↔ Average:'+formatVal(toHumanUnit(dataheader.avg), 2));
 
                 var legendmin = legend.append('text')
                     .attr("class","legend_min")
                     .attr("y", (height-1))
                     .text('↓ '+formatVal(toHumanUnit(dataheader.min), 1))
                     .append('title')
-                        .text(formatVal(toHumanUnit(dataheader.min), 2));
+                        .text('↓ min:'+formatVal(toHumanUnit(dataheader.min), 2));
 
 
             }
@@ -428,7 +428,7 @@ function timeSeriesChart_curves() {
 
 // ================= Property of chart =================
 
-    chart.loader = function(container) {
+    chart.loader = function(container, callback) {
         var ready = false,
             dataTsv = false;
 
@@ -437,12 +437,14 @@ function timeSeriesChart_curves() {
         // on charge les données et on lance le tracage
         d3.tsv( ajaxUrl + "?station="+ station +"&sensor="+ sensor +"&XdisplaySizePxl="+(width - margin.left - margin.right)+"&Since="+dateDomain[0]+"&To="+dateDomain[1],
             function(data) {
-                console.TimeStep('load Data');
+                // console.TimeStep('load Data');
                 // console.log(data);
                 if (ready) {
                     d3.select(container)
                         .datum(data)
                         .call(chart);
+                    if (typeof callback === "function") 
+                        callback(chart);
                 }
                 ready = true;
                 dataTsv = data;
@@ -451,8 +453,8 @@ function timeSeriesChart_curves() {
 
         d3.json( ajaxUrl + "?station="+ station +"&sensor="+ sensor +"&XdisplaySizePxl="+(width - margin.left - margin.right)+"&infos=dataheader"+"&Since="+dateDomain[0]+"&To="+dateDomain[1],
             function(data) {
-                console.TimeStep('load Header');
-                console.log(data);
+                // console.TimeStep('load Header');
+                // console.log(data);
                 chart
                     .dataheader(data)
                     .toHumanUnit(formulaConverter (data.sensor.SEN_MAGNITUDE, data.sensor.SEN_USER_UNIT));
@@ -462,6 +464,8 @@ function timeSeriesChart_curves() {
                     d3.select(container)
                         .datum(dataTsv)
                         .call(chart);
+                    if (typeof callback === "function")
+                        callback(chart);
                 }
                 ready = true;
             }

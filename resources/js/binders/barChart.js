@@ -170,7 +170,7 @@ function timeSeriesChart_barChart() {
                     .append("rect")
                         .attr("class", "bar")
                         .append("title");
-    console.log(d3.select(this),g, dateDomain);
+
             if (!nude) {
                 g.append("g").attr("class", "x axis");
                 g.append("g").attr("class", "y axis");
@@ -186,6 +186,8 @@ function timeSeriesChart_barChart() {
                                 .attr("y", Y)
                                 .attr("width", 8)
                                 .attr("height", function(d) {return Math.abs(xPos-Y(d));})
+                                .attr("stroke", darkColor)
+                                .attr("fill", lightColor)
                                 .on("click", function(d) { return onClickAction(d); })
                                 .on("mouseover", function(d) {
                                         legendDate.text(timeFormat(d.date,' '));
@@ -264,6 +266,8 @@ function timeSeriesChart_barChart() {
                                 .attr("y", Y)
                                 .attr("width", 2)
                                 .attr("height", function(d) {return Math.abs(xPos-Y(d));})
+                                .attr("stroke", darkColor)
+                                .attr("fill", lightColor)
                                 .select('title')
                                 .text(function(d) {
                                         return formatVal(+d.val)+"\nFrom : "+toHumanDate(d.period[0])+"\nto : "+toHumanDate(d.period[1]);
@@ -446,7 +450,7 @@ function timeSeriesChart_barChart() {
         if (!arguments.length) return nude;
         nude = _;
         if (_) {
-            margin = {top: 0, left: 2, bottom: 0, right: 45};
+            margin = {top: 0, left: 2, bottom: 0, right: 50};
         }
         return chart;
     };

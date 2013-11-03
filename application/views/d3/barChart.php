@@ -38,14 +38,14 @@
         /*clip-path:url(#8b65a37af5cb476adf3e0e0e623b1896);*/
     }
     .bar {
-        fill: #aec7e8;
-        stroke: #1F77B4;
+        /*fill: #aec7e8;*/
+        /*stroke: #1F77B4;*/
         stroke-width: 1px;
         shape-rendering: crispEdges;
         }
 
     .bar:hover, .sensitive:hover > .bar {
-        stroke: #E6550D;
+        /*stroke: #E6550D;*/
         stroke-width: 2px;
         shape-rendering: crispEdges;
         }
@@ -95,7 +95,7 @@ function probeViewer() {
                         .sensor(sensor)
                         .onClickAction(function(d, i) { console.error (d, i); })
                         .toHumanDate(formulaConverter ('strDate', 'ISO'))
-                        .Color()
+                        .Color(1)
                         .nude(true);
     barChartY.loader("#YearBarChar");
 
@@ -109,7 +109,7 @@ function probeViewer() {
                         .sensor(sensor)
                         .onClickAction(function(d, i) { console.error (d, i); })
                         .toHumanDate(formulaConverter ('strDate', 'ISO'))
-                        .Color()
+                        .Color(2)
                         .nude(true);
     barChartM.loader("#MonthBarChar");
 
@@ -123,7 +123,7 @@ function probeViewer() {
                         .sensor(sensor)
                         .onClickAction(function(d, i) { console.error (d, i); })
                         .toHumanDate(formulaConverter ('strDate', 'ISO'))
-                        .Color()
+                        .Color(3)
                         .nude(true);
     barChartW.loader("#WeekBarChar");
 
@@ -137,7 +137,7 @@ function probeViewer() {
                         .sensor(sensor)
                         .onClickAction(function(d, i) { console.error (d, i); })
                         .toHumanDate(formulaConverter ('strDate', 'ISO'))
-                        .Color()
+                        .Color(4)
                         .nude(true);
     barChartD.loader("#TodayBarChar");
 
@@ -153,7 +153,7 @@ function probeViewer() {
                         .sensor(sensor)
                         .onClickAction(function(d, i) { console.error (d, i); })
                         .toHumanDate(formulaConverter ('strDate', 'ISO'))
-                        .Color()
+                        .Color(6)
                         .nude(false);
     barChartZoom.loader("#barSvgArea");
 

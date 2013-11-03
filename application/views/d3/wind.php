@@ -140,6 +140,9 @@
     .legend .val, .legend .date {
         text-anchor:end;
     }
+    .legend .Infos {
+        text-anchor:middle;
+    }
     .arrow:hover>.hair, .arrow:hover>.marker {
         stroke: #E6550D;
         stroke-width: 2px;
@@ -180,7 +183,7 @@
     }
     .sensitive {
         /*display: none;*/
-        opacity: 0.01;
+        /*opacity: 0.1;*/
         /*visibility: hidden;*/
         }
 
