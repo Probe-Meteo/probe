@@ -480,7 +480,7 @@ function timeSeriesChart_curves() {
         if (!arguments.length) return nude;
         nude = _;
         if (_) {
-            margin = {top: 0, left: 0, bottom: 0, right: 50};
+            margin = {top: 1, left: 0, bottom: 1, right: 55};
         }
         return chart;
     };

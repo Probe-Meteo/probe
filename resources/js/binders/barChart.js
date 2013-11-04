@@ -411,8 +411,8 @@ function timeSeriesChart_barChart() {
         // on charge les données et on lance le tracage
         d3.tsv( ajaxUrl + "?station="+ station +"&sensor="+ sensor +"&XdisplaySizePxl="+w+"&Since="+dateDomain[0]+"&To="+dateDomain[1],
             function(data) {
-                console.TimeStep('load Data');
-                console.log(data);
+                // console.TimeStep('load Data');
+                // console.log(data);
                 if (ready) {
                     d3.select(container)
                         .datum(data)
@@ -425,8 +425,8 @@ function timeSeriesChart_barChart() {
 
         d3.json( ajaxUrl + "?station="+ station +"&sensor="+ sensor +"&XdisplaySizePxl="+w+"&infos=dataheader"+"&Since="+dateDomain[0]+"&To="+dateDomain[1],
             function(data) {
-                console.TimeStep('load Header');
-                console.log(data);
+                // console.TimeStep('load Header');
+                // console.log(data);
                 chart
                     .dataheader(data)
                     .toHumanUnit(formulaConverter (data.sensor.SEN_MAGNITUDE, data.sensor.SEN_USER_UNIT));
@@ -450,7 +450,7 @@ function timeSeriesChart_barChart() {
         if (!arguments.length) return nude;
         nude = _;
         if (_) {
-            margin = {top: 0, left: 2, bottom: 0, right: 50};
+            margin = {top: 1, left: 2, bottom: 1, right: 55};
         }
         return chart;
     };

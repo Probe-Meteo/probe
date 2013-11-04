@@ -28,6 +28,7 @@ function include_histoWind(container, station, XdisplaySizePxl) {
                         .toHumanAngle(formulaConverter ('angle', '°'))
                         .toHumanDate(formulaConverter ('strDate', 'ISO'));
 
+
     histoWind.loader(container);
 }
 
@@ -38,6 +39,7 @@ function include_histoWind(container, station, XdisplaySizePxl) {
 
 // ================= Engine build chart of wind by period ====================
 
+var color=d3.scale.category20();
 function timeSeriesChart_histoWind() {
     var data,
         margin = {top: 5, right: 25, bottom: 5, left: 25},
@@ -45,7 +47,9 @@ function timeSeriesChart_histoWind() {
         height = 160,
         dataheader = null,
         station = null,
+        sensor = 'TA:Arch:Various:Wind:SpeedAvg',
         withAxis = true,
+        nude = false,
         timeFormat = d3.time.format("%Y-%m-%dT%H:%M:%S"),
         dateParser = function(d) { return timeFormat.parse (d.date); },
         dateDomain = [formatDate(new Date(0)), formatDate(new Date())],
@@ -60,14 +64,21 @@ function timeSeriesChart_histoWind() {
         xAxis = d3.svg.axis().scale(xScale).orient("bottom").tickSize(4,0),
         yAxis = d3.svg.axis().scale(yScale).orient("left").ticks(4).tickSize(3,0),
         onClickAction = function(d) { console.log(d); },
-        toHumanSpeed = function(d) { return +d; },
-        toHumanAngle = function(d) { return +d; },
+        unit = false,
+        md5 = false,
+        darkColor = false,
+        lightColor = false,
+        toHumanSpeed = function(SI){if (!arguments.length) return '';return +SI;},
+        toHumanAngle = function(SI){if (!arguments.length) return '';return +SI;},
         toHumanDate = function(d) { return d; },
         ajaxUrl = "/data/histoWind";
       // line = d3.svg.line().x(X).y(Y);
 
 
     function chart(selection) {
+        md5 = MD5(station+(new Date()).getMilliseconds());
+        if (!darkColor)  darkColor=color(md5+'0');
+        if (!lightColor)  lightColor=color(md5+'1');
         //selection represente la liste de block ou ecire les donnees
         selection.each(function(rawdata) {
             // Convert data to standard representation greedily;
@@ -103,13 +114,13 @@ function timeSeriesChart_histoWind() {
                     Offset=(yScale(d.xSpeed)-yScale(0))-(xScale(d.date)-xScale(domainDate[0]));
                     return Offset>0?Offset:0;  })+1,
             });
-                console.log(xScale.domain(), xScale.range(), width, margin.left, margin.right);
+             console.log(xScale.domain(), xScale.range(), width, margin.left, margin.right);
 
             // Update the x-scale with new margin values
             xScale
                 // .domain(domainDate)
                 .range([0, width - (margin.left + margin.right)]);
-                console.log(xScale.domain(), xScale.range());
+            console.log(xScale.domain(), xScale.range());
 
             // Select the svg element, if it exists.
             var svg = d3.select(this).selectAll("svg").data([data]);
@@ -118,36 +129,25 @@ function timeSeriesChart_histoWind() {
             // Otherwise, create the skeletal chart.
             var gEnter = svg.enter()
                             .append("svg")
-                                // .attr("viewBox", "0 0 "+width+" "+height)
+                                .attr("viewBox", "0 0 "+width+" "+height)
                                 // .attr("preserveAspectRatio", "xMinYMin")
-                                .attr("width", "100%")
+                                .attr("width", function(){return nude ? width : "100%";})
                                 .attr("height", height);
 
             var defs = gEnter.append("defs")
+                             .attr("id", 'defs'+md5);
 
             defs.append("marker")
-                .attr("id", "arrowhead")
+                .attr("id", "arrowhead"+md5)
                 .attr("refX", 2)
                 .attr("refY", 0)
-                .attr("viewBox", "-5 -5 12 10")
+                .attr("viewBox", "-25 -25 60 50")
                 .attr("markerUnits", "strokeWidth")
                 .attr("markerWidth", 6)
                 .attr("markerHeight", 12)
                 .attr("orient", "auto")
                 .append("polygon")
-                    .attr("stroke", "#3182bd")
-                    .attr("points", "0,0 -2.5,-2.5 5,0 -2.5,2.5");
-            defs.append("marker")
-                .attr("id", "arrowheadHover")
-                .attr("refX", 2)
-                .attr("refY", 0)
-                .attr("viewBox", "-5 -5 12 10")
-                .attr("markerUnits", "strokeWidth")
-                .attr("markerWidth", 6)
-                .attr("markerHeight", 12)
-                .attr("orient", "auto")
-                .append("polygon")
-                    .attr("stroke", "#E6550D")
+                    .attr("stroke", darkColor)
                     .attr("points", "0,0 -2.5,-2.5 5,0 -2.5,2.5");
 
             var timeoutID=null;
@@ -157,13 +157,10 @@ function timeSeriesChart_histoWind() {
                 .attr('height', height - margin.top - margin.bottom)
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-
-
             // Update the inner dimensions.
             var g = gEnter.append("g")
                         .attr("left","0px")
                         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-            // gEnter=gEnter.append("g");
 
             g.append("path").attr("class", "line");
             g.append("g").attr("class", "x axis");
@@ -175,12 +172,15 @@ function timeSeriesChart_histoWind() {
                             .enter()
                             .append("g")
                                 .attr("class", "arrow")
+                                .attr("marker-end", "url(#arrowhead"+md5+")")
                                 .on("click", onClickAction);
 
             arrow.append("line")
-                .attr("class", "hair");
+                .attr("class", "hair")
+                .attr("stroke", darkColor);
             arrow.append("line")
                 .attr("class", "hair2");
+
             arrow.append("title")
                 .text(function(d) {
                         return "Speed Avg: "+ toHumanSpeed(d.Speed).toFixed(1)+toHumanSpeed()+
@@ -198,39 +198,45 @@ function timeSeriesChart_histoWind() {
                     .attr("y1", function(d) { return yScale(0); })
                     .attr("x2", function(d) { return xScale(d.date) + d.xSpeed*coef; })
                     .attr("y2", function(d) { return yScale(d.ySpeed); })
+                    .attr("stroke", darkColor)
                     // on cache les elements hors referentiel
                     .attr("display", function(d) {return (d.date>=xExtend[0] && d.date<=xExtend[1])?'inline':'none'; });
 
                 return this;
             }
-            g.drawAxis = function(){
-            // chose the possition of x-Axis
-                if (0<yScale.domain()[0])
-                    xPos = yScale.range()[0];
-                else if (yScale.domain()[1]<0)
-                    xPos = yScale.range()[1];
-                else
-                    xPos = yScale(0);
+            if (!nude) {
+                g.drawAxis = function(){
+                // chose the possition of x-Axis
+                    if (0<yScale.domain()[0])
+                        xPos = yScale.range()[0];
+                    else if (yScale.domain()[1]<0)
+                        xPos = yScale.range()[1];
+                    else
+                        xPos = yScale(0);
 
-                if (withAxis) {
-                    // Update the x-axis.
-                    g.select(".x.axis")
-                        .attr("transform", "translate(0," + xPos + ")") // axe tjrs en bas : yScale.range()[0] + ")")
-                        .call(xAxis);
+                    if (withAxis) {
+                        // Update the x-axis.
+                        g.select(".x.axis")
+                            .attr("transform", "translate(0," + xPos + ")") // axe tjrs en bas : yScale.range()[0] + ")")
+                            .call(xAxis);
+                    }
+                    return this;
                 }
-                return this;
-            }
 
-            Sensitive.call(zm=d3.behavior.zoom().x(xScale).scaleExtent([1,1000]).on("zoom", function(){
-                window.clearTimeout(timeoutID);
-                timeoutID = window.setTimeout(function(){zoom(g)}, 400);                
+                Sensitive.call(zm=d3.behavior.zoom().x(xScale).scaleExtent([1,1000]).on("zoom", function(){
+                    window.clearTimeout(timeoutID);
+                    timeoutID = window.setTimeout(function(){zoom(g)}, 400);                
+                    g.updateCurve()
+                     .drawAxis ();
+                    // console.TimeStep('Zoom');
+                }));
                 g.updateCurve()
-                 .drawAxis ();
-                // console.TimeStep('Zoom');
-            }));
+                 .drawAxis();
+            }
+            else {
 
-            g.updateCurve()
-             .drawAxis();
+                g.updateCurve();
+            }
 
         });
     }
@@ -246,8 +252,7 @@ function timeSeriesChart_histoWind() {
         // on demande les infos importante au sujet de notre futur tracé
         // ces infos permettent de finir le parametrage de notre "Chart"
         // on charge les données et on lance le tracage
-        d3.tsv( ajaxUrl + "?station="+ station +"&XdisplaySizePxl="+width+"&Since="+formatDate(zmDomain[0],'T')+"&To="+formatDate(zmDomain[1]
-,'T'),
+        d3.tsv( ajaxUrl + "?station="+ station +"&XdisplaySizePxl="+width+"&Since="+formatDate(zmDomain[0],'T')+"&To="+formatDate(zmDomain[1],'T'),
             function(data2add) {
                 console.TimeStep('load Data Zoom');
                 data2add = data2add.map(function(d, i) {
@@ -275,7 +280,7 @@ function timeSeriesChart_histoWind() {
                     .enter()
                     .append("g")
                         .attr("class", "arrow")
-                        // .attr("new",function(d){return d.date})
+                        .attr("marker-end", "url(#arrowhead"+md5+")")
                         .on("click", onClickAction);
 
                 arrow.append("line")
@@ -331,10 +336,10 @@ function timeSeriesChart_histoWind() {
         // on demande les infos importante au sujet de notre futur tracé
         // ces infos permettent de finir le parametrage de notre "Chart"
         // on charge les données et on lance le tracage
-        d3.tsv( ajaxUrl + "?station="+ station +"&XdisplaySizePxl="+width+"&Since="+dateDomain[0]+"&To="+dateDomain[1],
+        d3.tsv( ajaxUrl + "?station="+ station+"&sensor="+ sensor +"&XdisplaySizePxl="+width+"&Since="+dateDomain[0]+"&To="+dateDomain[1],
             function(data) {
-                console.TimeStep('load Data');
-                console.log(data);
+                // console.TimeStep('load Data');
+                // console.log(data);
 
                 if (ready) {
                     d3.select(container)
@@ -346,13 +351,14 @@ function timeSeriesChart_histoWind() {
             }
         );
 
-        d3.json( ajaxUrl + "?station="+ station +"&XdisplaySizePxl="+width+"&infos=dataheader"+"&Since="+dateDomain[0]+"&To="+dateDomain[1],
+        d3.json( ajaxUrl + "?station="+ station+"&sensor="+ sensor +"&XdisplaySizePxl="+width+"&infos=dataheader"+"&Since="+dateDomain[0]+"&To="+dateDomain[1],
             function(data) {
-                console.TimeStep('load Header');
-                console.log(data);
+                // console.TimeStep('load Header');
+                // console.log(data);
 
-                chart.dataheader(data);
-                
+                chart.dataheader(data)
+                    .toHumanSpeed(formulaConverter (data.sensor.SEN_MAGNITUDE, data.sensor.SEN_USER_UNIT));
+
                 if (ready) {
                     // console.log(data);
                     d3.select(container)
@@ -368,12 +374,30 @@ function timeSeriesChart_histoWind() {
 
 // ================= Accesseurs =====================
 
+    chart.nude = function(_) {
+        if (!arguments.length) return nude;
+        nude = _;
+        if (_) {
+            margin = {top: 3, left: 3, bottom: 3, right: 3};
+        }
+        return chart;
+    };
     chart.dateParser = function(_) { // genere la fonction de conversion du champ [string]:date en [date]:date
         if (!arguments.length) return dateParser;
         if (typeof _ === "string") {
             timeFormat = d3.time.format(_);
             dateParser = function(d) { return timeFormat.parse (d.date); };
         } else dateParser = _;
+        return chart;
+    };
+    chart.Color = function(_) {
+        if (/(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(_)) {
+            darkColor = _;
+            lightColor = '#c7c7c7';
+        } else {
+            darkColor = color(_+'1');
+            lightColor = color(_+'2');
+        }
         return chart;
     };
 

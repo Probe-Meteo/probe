@@ -95,7 +95,7 @@ function probeViewer() {
                         .sensor(sensor)
                         .onClickAction(function(d, i) { console.error (d, i); })
                         .toHumanDate(formulaConverter ('strDate', 'ISO'))
-                        .Color(1)
+                        .Color()
                         .nude(true);
     barChartY.loader("#YearBarChar");
 
@@ -109,7 +109,7 @@ function probeViewer() {
                         .sensor(sensor)
                         .onClickAction(function(d, i) { console.error (d, i); })
                         .toHumanDate(formulaConverter ('strDate', 'ISO'))
-                        .Color(2)
+                        .Color()
                         .nude(true);
     barChartM.loader("#MonthBarChar");
 
@@ -123,7 +123,7 @@ function probeViewer() {
                         .sensor(sensor)
                         .onClickAction(function(d, i) { console.error (d, i); })
                         .toHumanDate(formulaConverter ('strDate', 'ISO'))
-                        .Color(3)
+                        .Color()
                         .nude(true);
     barChartW.loader("#WeekBarChar");
 
@@ -137,7 +137,7 @@ function probeViewer() {
                         .sensor(sensor)
                         .onClickAction(function(d, i) { console.error (d, i); })
                         .toHumanDate(formulaConverter ('strDate', 'ISO'))
-                        .Color(4)
+                        .Color()
                         .nude(true);
     barChartD.loader("#TodayBarChar");
 
@@ -153,7 +153,7 @@ function probeViewer() {
                         .sensor(sensor)
                         .onClickAction(function(d, i) { console.error (d, i); })
                         .toHumanDate(formulaConverter ('strDate', 'ISO'))
-                        .Color(6)
+                        .Color()
                         .nude(false);
     barChartZoom.loader("#barSvgArea");
 

@@ -183,7 +183,7 @@
     }
     .sensitive {
         /*display: none;*/
-        /*opacity: 0.1;*/
+        opacity: 0;
         /*visibility: hidden;*/
         }
 
