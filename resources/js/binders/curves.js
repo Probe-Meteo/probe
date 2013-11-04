@@ -8,6 +8,10 @@
 * @link     http://probe-meteo.com/doc
 * @Model    http://bost.ocks.org/mike/chart/
 */
+    var Day_30 = new Date();
+    Day_30.setDate(Day_30.getDate() -30);
+    var Tomorow = new Date();
+    Tomorow.setDate(Tomorow.getDate() +1);
 
 
 function include_curves(container, station, sensor, XdisplaySizePxl)
@@ -17,7 +21,7 @@ function include_curves(container, station, sensor, XdisplaySizePxl)
                         .width(XdisplaySizePxl)
                         // .ajaxUrl("/data/curve")
                         .dateParser("%Y-%m-%d %H:%M")
-                        .dateDomain(["2013-06-31T06:00:00", formatDate(new Date(), ' ')])
+                        .dateDomain([formatDate(Day_30), formatDate(Tomorow)])
                         .station(station)
                         .sensor(sensor)
                         // .trend(6)
@@ -34,7 +38,7 @@ function include_nudecurves(container, station, sensor, XdisplaySizePxl)
                         .height(40)
                         // .ajaxUrl("/data/curve")
                         .dateParser("%Y-%m-%d %H:%M")
-                        .dateDomain(["2013-06-31T06:00:00", formatDate(new Date(), ' ')])
+                        .dateDomain([formatDate(Day_30), formatDate(Tomorow)])
                         .station(station)
                         .sensor(sensor)
                         .Color()
@@ -159,6 +163,7 @@ function timeSeriesChart_curves() {
                             this.select(".y.axis")
                                 .attr("transform", "translate(-1,0)")
                                 .call(yAxis);
+                            legendSum.text(Infos);
                         }
                         return this;
                     };
@@ -174,7 +179,7 @@ function timeSeriesChart_curves() {
                 var legendXleft = width - margin.left- margin.right-4;
                 var legendDate = legend.append('text')
                     .attr("class","date")
-                    .attr('x', legendXleft-formatVal(dataheader.max).length*6-6)
+                    .attr('x', legendXleft-(formatVal(dataheader.max).length+2)*6)
                     .text('Scroll for Zoom');
                    // console.log(legendDate.getComputedTextLength());
 
@@ -182,6 +187,14 @@ function timeSeriesChart_curves() {
                     .attr("class","val")
                     .attr('x', legendXleft)
                     .text(formatVal(data[data.length-1].val));
+
+                var Infos = function() {return "Min : "+formatVal(toHumanUnit(dataheader.min), 2)+
+                "  —  Average : "+formatVal(toHumanUnit(dataheader.avg), 2)+
+                "  —  Max : "+formatVal(toHumanUnit(dataheader.max), 2);},
+                    legendSum = legend.append('text')
+                        .attr("class","Infos")
+                        .attr('x', legendXleft/2)
+                        .text(Infos);
 
                 var spotSize = 8;
                 var spot=gEnter.append("g")
@@ -280,8 +293,46 @@ function timeSeriesChart_curves() {
                 g.updateCurve()
                  .drawAxis ();
 
-            } else {
-                g.updateCurve(line);
+            } else { // for nude chart
+                var path = g.updateCurve(line).select(".line");
+                var totalLength = path.node().getTotalLength();
+
+                path
+                  .attr("stroke-dasharray", totalLength + " " + totalLength)
+                  .attr("stroke-dashoffset", totalLength)
+                  .transition()
+                    .duration(2000)
+                    .ease("linear")
+                    .attr("stroke-dashoffset", 0);
+
+                var legend = gEnter.append("g")
+                    .attr("class", "legend")
+                    .attr("transform", "translate("+(width - margin.right+2)+",0)")
+                    // .attr("transform", "translate(0,"+(height - margin.bottom +5)+")")
+                    .attr("fill", darkColor);
+
+                var legendmax = legend.append('text')
+                    .attr("class","legend_max")
+                    .attr("y", (6))
+                    .text('↑ '+formatVal(toHumanUnit(dataheader.max), 1))
+                    .append('title')
+                        .text('↑ max:'+formatVal(toHumanUnit(dataheader.max), 2));
+
+                var legendavg = legend.append('text')
+                    .attr("class","legend_avg")
+                    .attr("y", (height+6)/2)
+                    .text('↔ '+formatVal(toHumanUnit(dataheader.avg), 1))
+                    .append('title')
+                        .text('↔ Average:'+formatVal(toHumanUnit(dataheader.avg), 2));
+
+                var legendmin = legend.append('text')
+                    .attr("class","legend_min")
+                    .attr("y", (height-1))
+                    .text('↓ '+formatVal(toHumanUnit(dataheader.min), 1))
+                    .append('title')
+                        .text('↓ min:'+formatVal(toHumanUnit(dataheader.min), 2));
+
+
             }
             // Update the outer dimensions.
             // svg .attr("width", width)
@@ -298,8 +349,7 @@ function timeSeriesChart_curves() {
         // ces infos permettent de finir le parametrage de notre "Chart"
         // on charge les données et on lance le tracage
         console.TimeStep('Zoom');
-        d3.tsv( ajaxUrl + "?station="+ station +"&sensor="+ sensor +"&XdisplaySizePxl="+width+"&Since="+formatDate(zmDomain[0],'T')+"&To="+formatDate(zmDomain[1]
-,'T'),
+        d3.tsv( ajaxUrl + "?station="+ station +"&sensor="+ sensor +"&XdisplaySizePxl="+width+"&Since="+formatDate(zmDomain[0],'T')+"&To="+formatDate(zmDomain[1],'T'),
             function(data2add) {
                 console.TimeStep('load Data Zoom');
                 data2add = data2add.map(function(d, i) {
@@ -351,9 +401,11 @@ function timeSeriesChart_curves() {
         return yScale(+d.val);
     }
 
-    function formatVal(v) {
+    function formatVal(v, decimal) {
+        if (arguments.length<2)
+            decimal=2;
         //console.log(v, (+v).toPrecision(5));
-        return (+v).toFixed(2) + toHumanUnit();
+        return (+v).toFixed(decimal) +' '+ toHumanUnit();
     }
 
     // calcule la regression lineaire sur une srie de donnee
@@ -386,7 +438,7 @@ function timeSeriesChart_curves() {
 
 // ================= Property of chart =================
 
-    chart.loader = function(container) {
+    chart.loader = function(container, callback) {
         var ready = false,
             dataTsv = false;
 
@@ -395,12 +447,14 @@ function timeSeriesChart_curves() {
         // on charge les données et on lance le tracage
         d3.tsv( ajaxUrl + "?station="+ station +"&sensor="+ sensor +"&XdisplaySizePxl="+(width - margin.left - margin.right)+"&Since="+dateDomain[0]+"&To="+dateDomain[1],
             function(data) {
-                console.TimeStep('load Data');
+                // console.TimeStep('load Data');
                 // console.log(data);
                 if (ready) {
                     d3.select(container)
                         .datum(data)
                         .call(chart);
+                    if (typeof callback === "function") 
+                        callback(chart);
                 }
                 ready = true;
                 dataTsv = data;
@@ -409,8 +463,8 @@ function timeSeriesChart_curves() {
 
         d3.json( ajaxUrl + "?station="+ station +"&sensor="+ sensor +"&XdisplaySizePxl="+(width - margin.left - margin.right)+"&infos=dataheader"+"&Since="+dateDomain[0]+"&To="+dateDomain[1],
             function(data) {
-                console.TimeStep('load Header');
-                console.log(data);
+                // console.TimeStep('load Header');
+                // console.log(data);
                 chart
                     .dataheader(data)
                     .toHumanUnit(formulaConverter (data.sensor.SEN_MAGNITUDE, data.sensor.SEN_USER_UNIT));
@@ -420,6 +474,8 @@ function timeSeriesChart_curves() {
                     d3.select(container)
                         .datum(dataTsv)
                         .call(chart);
+                    if (typeof callback === "function")
+                        callback(chart);
                 }
                 ready = true;
             }
@@ -434,7 +490,7 @@ function timeSeriesChart_curves() {
         if (!arguments.length) return nude;
         nude = _;
         if (_) {
-            margin = {top: 0, right: 0, bottom: 0, left: 0};
+            margin = {top: 1, left: 0, bottom: 1, right: 55};
         }
         return chart;
     };

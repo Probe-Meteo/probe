@@ -140,53 +140,8 @@
     .legend .val, .legend .date {
         text-anchor:end;
     }
-    .sensitive {
-        opacity: 0;
-    }
-    /*    .line {
-        fill: none;
-        stroke-width: 1px;
-    }
-
-    .axis line,.axis path {
-        fill: none;
-        stroke: #000;
-        stroke-width: 1px;
-        shape-rendering: crispEdges;
-    }*/
-
-
-
-    /*    .line {
-        fill: none;
-        stroke: #000;
-        stroke-width: 1px;
-        shape-rendering: crispEdges;
-    }*/
-
-    /*    .axis line,.axis path {
-        fill: none;
-        stroke: #000;
-        stroke-width: 1px;
-        shape-rendering: crispEdges;
-    }*/
-    .arrow:hover>.hair, .arrow:hover>.marker {
-        stroke: #E6550D;
-        stroke-width: 2px;
-    }
-    /*Blue:#1F77B4 #3182bd #6baed6*/
-    /*Red:#E6550D*/
-    .hair {
-        fill: none;
-        stroke: #3182bd;
-        stroke-width: 1px;
-        /*shape-rendering: crispEdges;*/
-    }
-    .marker {
-        fill: #FFF;
-        stroke: #3182bd;
-        stroke-width: .7px;
-        /*shape-rendering: crispEdges;*/
+    .legend .Infos {
+        text-anchor:middle;
     }
 
 
@@ -215,7 +170,7 @@
         }
 
 
-    .stepPetalsBox .sensitive:hover + .petals {
+    .hoverBox .sensitive:hover + .petals {
         visibility: visible;
         opacity: .8;
         zoom: 2;
@@ -223,7 +178,6 @@
         -webkit-transition:visibility 0s linear;
         /*shape-rendering: crispEdges;*/
         }
-
     .petals{
         fill: #58e;
         stroke: #000;
@@ -248,21 +202,48 @@
       stroke-width: 1px;
       shape-rendering: crispEdges;
     }
-    
-    .arrow:hover>.hair {
+
+
+/*    .arrow:hover>.hair, .arrow:hover>.marker {
         stroke: #E6550D;
         stroke-width: 2px;
-        marker-end:url(#arrowheadHover);
+    }*/
+    /*Blue:#1F77B4 #3182bd #6baed6*/
+    /*Red:#E6550D*/
+/*    .hair {
+        fill: none;
+        stroke: #3182bd;
+        stroke-width: 1px;
+        shape-rendering: crispEdges;
+    }*/
+/*    .marker {
+        fill: #FFF;
+        stroke: #3182bd;
+        stroke-width: .7px;
+        shape-rendering: crispEdges;
+    }*/
+
+    .arrow, .arrow>.hair {
+        stroke-width: 1px;
+    }
+    .arrow:hover, .arrow:hover>.hair {
+        stroke-width: 2px;
+    }
+    .arrow:hover>.hair2 {
+        stroke-width: 10px;
     }
 
     /*Blue:#1F77B4 #3182bd #6baed6*/
     /*Red:#E6550D*/
     .hair {
         fill: none;
-        stroke: #3182bd;
-        marker-end:url(#arrowhead);
     }
-
+    .hair2 {
+        fill: none;
+        stroke: #3182bd;
+        stroke-width: 5px;
+        stroke-opacity: 0;
+    }
     marker polygon {
         fill:#FFF;
     }

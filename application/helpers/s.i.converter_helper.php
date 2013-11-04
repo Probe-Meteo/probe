@@ -123,14 +123,14 @@
 		return s2uc($str)-120;
 	}
 	
-	function ET_h($str) {// Evapotranspiration...
-		return s2uc($str)/1000;
+	// function ET_h($str) {// Evapotranspiration in2mm
+	// 	return s2uc($str)/1000*25.4;
+	// }
+	function ET1000($str) {// Evapotranspiration in2mm
+		return s2uSht($str)/1000*25.4;
 	}
-	function ET1000($str) {// Evapotranspiration...
-		return s2uSht($str)/1000;
-	}
-	function ET100($str) {// Evapotranspiration...
-		return s2uSht($str)/100;
+	function ET100($str) {// Evapotranspiration in2mm
+		return s2uSht($str)/100*25.4;
 	}
 	function UV($str) {// UV level...
 		return s2uc($str)/10;

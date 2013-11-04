@@ -371,6 +371,7 @@ Lis les valeur d´archive a partir d´une date
 			$firstDate2Get=is_date($last);
 			$this->RequestCmd("DMPAFT\n");
 			$RawDate = DMPAFT_SetVP2Date($firstDate2Get);
+			// log_message('infos', 'firstDate2Get : '.$firstDate2Get.'. RawDate : '.$RawDate);
 			fwrite($this->fp, $RawDate);				// Send this date (parametre #1)
 
 			$crc = CalculateCRC($RawDate);			// define the CRC of my date
@@ -403,11 +404,12 @@ Lis les valeur d´archive a partir d´une date
 						$DATAS = $this->RawConverter($this->DumpAfter, $ArchiveStrRaw);
 						if ($save) {
 							$this->save_Archive($DATAS);
-							// log_message('save', sprintf(i18n('Page #%d-%d of %s archived Ok.'),$j, $k, $ArchDate));
+							log_message('save', sprintf(i18n('Page #%d-%d of %s archived Ok.'),$j, $k, $ArchDate));
 						}
 						$LastArchDate = $ArchDate;
 					}
 					else {
+							log_message('save', sprintf(i18n('Page #%d-%d of %s archived NOK.'),$j, $k, $ArchDate));
 						throw new Exception(sprintf(
                             i18n('cli-info.block[%s%d%d]:out-of-range.label'),
                             $j, $k, $ArchDate
@@ -432,32 +434,37 @@ Compare l'heure de la station a celle du serveur web et lance la synchro si beso
 		where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,func_get_args());
 		$TIME = False;
 		// compare les date au format ISO 8601 (2004-02-12T15:19:21+00:00)
-		$realLag = ($VP2_Time = strtotime($VP2_Time_Str = $this->fetchStationTime())) - strtotime(date('c'));
+		$VP2_Time_Str = $this->fetchStationTime();
+		if ($VP2_Time_Str) {
+			$VP2_Time = strtotime($VP2_Time_Str);
+			$realLag = $VP2_Time - strtotime(date('c'));
 
-		log_message('warning',  "Real\t\t: ".date('c')."\n".$this->conf['_name']."\t: ".$VP2_Time_Str."\nLags\t\t: ".$realLag.' Sec');
-		
-		if (abs($realLag) > $maxLag) {
-			if ($TIME = $this->updateStationTime(strftime('%Y-%m-%dT%H:%M:%S', $VP2_Time - $realLag))) { // date('Y-m-dTH:i:s')
-				log_message('infos', i18n('Clock synchronizing.'));
+			log_message('warning',  "Real\t\t: ".date('c')."\n".$this->conf['_name']."\t: ".$VP2_Time_Str."\nLags\t\t: ".$realLag.' Sec');
+			
+			if (abs($realLag) > $maxLag) {
+				if ($TIME = $this->updateStationTime(strftime('%Y-%m-%dT%H:%M:%S', $VP2_Time - $realLag))) { // date('Y-m-dTH:i:s')
+					log_message('infos', i18n('Clock synchronizing.'));
+				}
+				// else log_message('warning', i18n( 'Clock synch. error'));
 			}
-			// else log_message('warning', i18n( 'Clock synch. error'));
-		}
-		else if ($force) {
-			// log_message('warning', sprintf(
-   //              i18n('cli-warning.clock-sync[force].label')
-   //          ));
-			if ($TIME = $this->updateStationTime(date('Y-m-dTH:i:s'))) {
-				log_message('infos', i18n('Clock synchronizing.'));
+			else if ($force) {
+				// log_message('warning', sprintf(
+	   //              i18n('cli-warning.clock-sync[force].label')
+	   //          ));
+				if ($TIME = $this->updateStationTime(date('Y-m-dTH:i:s'))) {
+					log_message('infos', i18n('Clock synchronizing.'));
+				}
+				// else log_message('warning', i18n( 'Clock synch. error'));
 			}
-			// else log_message('warning', i18n( 'Clock synch. error'));
-		}
-		else return true;
+			else return true;
 
-		log_message('infos', sprintf(
-		    i18n('cli-infos.clock-sync[%s].label'),
-		    $TIME
-		));		
-		return $TIME;
+			log_message('infos', sprintf(
+			    i18n('cli-infos.clock-sync[%s].label'),
+			    $TIME
+			));		
+			return $TIME;
+		}
+		return false;
 	}
 /**
 Lis l'heure de la station
@@ -485,7 +492,7 @@ Lis l'heure de la station
 			return $TIME;
 		}
 		catch (Exception $e) {
-			log_message('warning',  $e->getMessage());
+			log_message('error',  $e->getMessage());
 		}
 		return $TIME;
 	}

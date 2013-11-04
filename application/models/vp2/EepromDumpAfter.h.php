@@ -76,7 +76,7 @@ Convention de nomage :
 	'TA:Arch:Various:Wind:DominantDirection'=>	array( 'pos' => 27,	'len' => 1,	'fn'=>'s2uc',		'SI'=>NULL,		'min'=>0,	'max'=>16,	'err'=>255,	'unit'=> '°'	),
 
 	'TA:Arch:Various:UV:IndexAvg'		=>	array( 'pos' => 28,	'len' => 1,	'fn'=>'UV',		'SI'=>NULL,		'min'=>0,	'max'=>17,	'err'=>255,	'unit'=> '-'	),
-	'TA:Arch:Various:ET:Hour'		=>	array( 'pos' => 29,	'len' => 1,	'fn'=>'ET_h',		'SI'=>NULL,		'min'=>0,	'max'=>2,	'err'=>255,	'unit'=> 'mm'	),
+	'TA:Arch:Various:ET:Hour'		=>	array( 'pos' => 29,	'len' => 1,	'fn'=>'ET1000',		'SI'=>NULL,		'min'=>0,	'max'=>2,	'err'=>255,	'unit'=> 'mm'	),
 	'TA:Arch:Various:Solar:HighRadiation'	=>	array( 'pos' => 30,	'len' => 2,	'fn'=>'s2sSht',		'SI'=>NULL,		'min'=>0,	'max'=>1409,	'err'=>32767,	'unit'=> 'W/m²'	),
 	'TA:Arch:Various:UV:HighIndex'		=>	array( 'pos' => 32,	'len' => 1,	'fn'=>'UV',		'SI'=>NULL,		'min'=>0,	'max'=>25,	'err'=>255,	'unit'=> 'W/m²'	),
 	'TA:Arch:Various::ForecastRule'	=>	array( 'pos' => 33,	'len' => 1,	'fn'=>'s2uc',		'SI'=>NULL,		'min'=>0,	'max'=>0xFF,	'err'=>193,	'unit'=> '-'	),

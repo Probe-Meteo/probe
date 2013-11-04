@@ -9,6 +9,7 @@ CREATE TABLE TR_SENSOR (
     SEN_MAGNITUDE VARCHAR(32) NULL DEFAULT NULL COMMENT 'Egine aspect messurment',
     SEN_ENGINE_UNIT VARCHAR(16) NULL DEFAULT NULL COMMENT 'Default Engine unit (Internationnal System)',
     SEN_USER_UNIT VARCHAR(16) NULL DEFAULT NULL COMMENT 'Display unit choised',
+    SEN_DISPLAY_LEVEL TINYINT(4) NULL DEFAULT NULL COMMENT 'Where Display this Sensor (dashboard...)',
     SEN_DESCRIPTIF MEDIUMTEXT NULL DEFAULT NULL COMMENT 'Descriptif of this sensor',
     SEN_MIN_REALISTIC FLOAT(11) NULL DEFAULT NULL COMMENT 'Minimum realistic value in real context',
     SEN_MAX_REALISTIC FLOAT(11) NULL DEFAULT NULL COMMENT 'Maximum realistic value in real context',

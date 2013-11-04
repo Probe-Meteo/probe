@@ -67,8 +67,6 @@ function probeViewer(){
     HistoricalVector.loader('#HistoricalVector');
     HistoricalSpeed.loader('#HistoricalSpeed');
     HistoricalDirection.loader('#HistoricalDirection');
-
-
 }
 
 

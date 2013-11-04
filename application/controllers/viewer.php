@@ -95,6 +95,11 @@ class viewer extends CI_Controller
         where_I_Am(__FILE__, __CLASS__, __FUNCTION__, __LINE__, func_get_args());
         $page = new Page_manager();
 
+        $this->load->model('station');
+        $this->WS = new station();
+        $stations = $this->WS->stationsList; // est un tableau qui te donne la liste des stations, pas forcement utile dans ton cas
+        $scannedDir = array_diff(scandir(BINDER_PATH), array('..', '.'));
+
         // build view data
         $page->addMetadata($dataBinder);
         $page->addData('breadcrumb',
@@ -108,6 +113,8 @@ class viewer extends CI_Controller
         );
         $page->addData('viewer', true);
         $page->addData('dataBinder', $dataBinder);
+        $page->addData('list', array_map(array($this, 'prepareViewList'), $scannedDir));
+        $page->addData('stations', $stations);
         $page->addData('station', $station);
         $page->addData('sensor', $sensor);
 
@@ -129,6 +136,7 @@ class viewer extends CI_Controller
 
         $page = new Page_manager();
 
+        $page->addData('viewer', true);
         $page->addMetadata('list-view');
         $page->addData('breadcrumb', $this->_breadcrumb['list-viewer']);
         $page->addData('list', array_map(array($this, 'prepareViewList'), $scannedDir));

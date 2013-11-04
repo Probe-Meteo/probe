@@ -13,98 +13,154 @@
 
 ?>
 <div id="resizable" class="ui-widget-content">
-    <p>teste de truc a raconter au sujet de cette courbe
-        <span id="curveSvgArea01" style="width:100px">
-            <!-- d3 content should be -dynamically- placed here -->
-        </span> y a aussi d'autre infos
-        <span id="curveSvgArea02" width:100px>
-            <!-- d3 content should be -dynamically- placed here -->
-        </span> et des donnees suplementaire
-        <span id="curveSvgArea03" style="width:100px">
-            <!-- d3 content should be -dynamically- placed here -->
-        </span>
-    </p>
-    <span id="curveSvgArea1">
+    <h4 class="ui-widget-header">Average Curve Historical Chart</h4>
+    <p>
+    This Year <span id="YearBarChar">
         <!-- d3 content should be -dynamically- placed here -->
     </span>
-    <span id="curveSvgArea2">
+    This Month <span id="MonthBarChar">
         <!-- d3 content should be -dynamically- placed here -->
     </span>
-    <span id="curveSvgArea3">
+    This Week <span id="WeekBarChar">
         <!-- d3 content should be -dynamically- placed here -->
     </span>
-    <span id="curveSvgArea4">
+    Today <span id="TodayBarChar">
         <!-- d3 content should be -dynamically- placed here -->
-    </span>
-    <span id="curveSvgArea5">
-        <!-- d3 content should be -dynamically- placed here -->
-    </span>
-    <span id="curveSvgArea6">
-        <!-- d3 content should be -dynamically- placed here -->
-    </span>
+    </span></p>
+    <div id="barSvgArea"></div>
 </div>
 
 <style>
-svg {
-    font-size: 10px;
-}
-#spot {
-    
-}
-.spot {
-    fill: none;
-    stroke-width: 1px;
-}
-.Dot {
-    fill: none;
-    stroke-width: 1px;
-}
-.spotCircle {
-    fill: none;
-    stroke-opacity: .3;
-    stroke-width: 6px;
-}
-.legend text {
-    /*fill: #1F77B4;*/
-    /*fill-width: 5px;*/
-    /*font-weight:bold;*/
-    /*fill-opacity: .2;*/
-    /*stroke: #fff;*/
-    /*stroke-width: .5px;*/
-    /*stroke-position:2;*/
-    /*stroke-opacity: .8;*/
-}
-.legend .val, .legend .date {
-    text-anchor:end;
-}
-.sensitive {
-    opacity: 0;
-}
-.line {
-    fill: none;
-    stroke-width: 1px;
-}
+    svg {
+        font-size: 10px;
+    }
+    #spot {
+        
+    }
+    .spot {
+        fill: none;
+        stroke-width: 1px;
+    }
+    .Dot {
+        fill: none;
+        stroke-width: 1px;
+    }
+    .spotCircle {
+        fill: none;
+        stroke-opacity: .3;
+        stroke-width: 6px;
+    }
+    .legend text {
+        /*fill: #1F77B4;*/
+        /*fill-width: 5px;*/
+        /*font-weight:bold;*/
+        /*fill-opacity: .2;*/
+        /*stroke: #fff;*/
+        /*stroke-width: .5px;*/
+        /*stroke-position:2;*/
+        /*stroke-opacity: .8;*/
+    }
+    .legend .val, .legend .date {
+        text-anchor:end;
+    }
+    .legend .Infos {
+        text-anchor:middle;
+    }
+    .legend .legend_min, .legend .legend_avg, .legend .legend_max { 
+        font-size: 8px;
+    }
 
-.axis line,.axis path {
-    fill: none;
-    stroke: #000;
-    stroke-width: 1px;
-    shape-rendering: crispEdges;
-}
+    .sensitive {
+        opacity: 0;
+    }
+    .line {
+        fill: none;
+        stroke-width: 1px;
+    }
+
+    .axis line,.axis path {
+        fill: none;
+        stroke: #000;
+        stroke-width: 1px;
+        shape-rendering: crispEdges;
+    }
 
 </style>
 <script>
-    function probeViewer(){
-        include_nudecurves("#curveSvgArea01", '<?=$station?>', 'TA:Arch:Hum:In:Current', 60);
-        include_nudecurves("#curveSvgArea02", '<?=$station?>', 'TA:Arch:Various:Bar:Current', 50);
-        include_nudecurves("#curveSvgArea03", '<?=$station?>', 'TA:Arch:Various:Wind:SpeedAvg', 300);
-        // include_curves("#curveSvgArea1", '<?=$station?>', '<?=$sensor?>', 500);
-        // include_curves("#curveSvgArea2", '<?=$station?>', 'TA:Arch:Temp:In:Average', 600);
-        // include_curves("#curveSvgArea3", '<?=$station?>', 'TA:Arch:Various:Solar:HighRadiation', 700);
-        // include_curves("#curveSvgArea4", '<?=$station?>', 'TA:Arch:Various:UV:IndexAvg', $('#resizable').width()-20);
-        // include_curves("#curveSvgArea5", '<?=$station?>', 'TA:Arch:Hum:Out:Current', $('#resizable').width()-20);
-        include_curves("#curveSvgArea6", '<?=$station?>', 'TA:Arch:Various:Wind:SpeedAvg', $('#resizable').width()-20);
+    var station = '<?=$station?>';
+    var sensor = '<?=$sensor?>';
 
+    function probeViewer(){
+        var Day_1 = new Date();
+        Day_1.setDate(Day_1.getDate() -1);
+        var Day_7 = new Date();
+        Day_7.setDate(Day_7.getDate() -7);
+        var Day_30 = new Date();
+        Day_30.setDate(Day_30.getDate() -30);
+        var Day_365 = new Date();
+        Day_365.setDate(Day_365.getDate() -365);
+
+        // on definie notre objet au plus pres de notre besoin.
+        var chartY = timeSeriesChart_curves()
+                            .width(52*4+50)
+                            .height(40)
+                            .dateParser("%Y-%m-%d %H:%M")
+                            .dateDomain([formatDate(Day_365), formatDate(new Date())])
+                            .station(station)
+                            .sensor(sensor)
+                            .toHumanDate(formulaConverter ('strDate', 'ISO'))
+                            .Color()
+                            .nude(true);
+        chartY.loader("#YearBarChar");
+
+        var chartM = timeSeriesChart_curves()
+                            .width(30*4+50)
+                            .height(40)
+                            .dateParser("%Y-%m-%d %H:%M")
+                            .dateDomain([formatDate(Day_30), formatDate(new Date())])
+                            .station(station)
+                            .sensor(sensor)
+                            .toHumanDate(formulaConverter ('strDate', 'ISO'))
+                            .Color()
+                            .nude(true);
+        chartM.loader("#MonthBarChar");
+
+        var chartW = timeSeriesChart_curves()
+                            .width(7*4*4+50)
+                            .height(40)
+                            .dateParser("%Y-%m-%d %H:%M")
+                            .dateDomain([formatDate(Day_7), formatDate(new Date())])
+                            .station(station)
+                            .sensor(sensor)
+                            .toHumanDate(formulaConverter ('strDate', 'ISO'))
+                            .Color()
+                            .nude(true);
+        chartW.loader("#WeekBarChar");
+
+        var chartD = timeSeriesChart_curves()
+                            .width(24*4+50)
+                            .height(40)
+                            .dateParser("%Y-%m-%d %H:%M")
+                            .dateDomain([formatDate(Day_1), formatDate(new Date())])
+                            .station(station)
+                            .sensor(sensor)
+                            .toHumanDate(formulaConverter ('strDate', 'ISO'))
+                            .Color()
+                            .nude(true);
+        chartD.loader("#TodayBarChar");
+
+
+        var chartZoom = timeSeriesChart_curves()
+                            .width($('#barSvgArea').width()-16)
+                            .height(200)
+                            .dateParser("%Y-%m-%d %H:%M")
+                            .dateDomain([formatDate(Day_365), formatDate(new Date())])
+                            .station(station)
+                            .sensor(sensor)
+                            .toHumanDate(formulaConverter ('strDate', 'ISO'))
+                            .Color()
+                            .nude(false);
+        chartZoom.loader("#barSvgArea");
     }
 
 

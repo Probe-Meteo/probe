@@ -7,38 +7,82 @@
 * @license  http://creativecommons.org/licenses/by-nc-sa/3.0/legalcode CC-by-nc-sa-3.0
 * @link     http://probe-meteo.com/doc
 */
-function include_barChart(container, station, sensor, XdisplaySizePxl)
-{
-    var formatDate = d3.time.format("%Y-%m-%d %H:%M");
 
-    // on definie notre objet au plus pres de notre besoin.
-    var barChart = timeSeriesChart_barChart()
-                        .width(XdisplaySizePxl)
-                        .ajaxUrl("/data/cumul")
-                        .date(function(d) { return formatDate.parse (d.date); })
-                        .station(station)
-                        .sensor(sensor)
-                        .onClickAction(function(d, i) { console.error (d, i); })
-                        .toHumanDate(formulaConverter ('strDate', 'ISO'));
+    // var Day_30 = new Date();
+    // Day_30.setDate(Day_30.getDate() -30);
+    // var Tomorow = new Date();
+    // Tomorow.setDate(Tomorow.getDate() +1);
 
-    barChart.loader(container);
-}
+// function include_barChart_n(container, station, sensor, XdisplaySizePxl)
+// {
+//     var formatDate = d3.time.format("%Y-%m-%d %H:%M");
+
+//     // on definie notre objet au plus pres de notre besoin.
+//     var barChart = timeSeriesChart_barChart()
+//                         .width(XdisplaySizePxl)
+//                         .height(40)
+//                         .ajaxUrl("/data/cumul")
+//                         // .date(function(d) { return formatDate.parse (d.date); })
+//                         .dateParser("%Y-%m-%d %H:%M")
+//                         .dateDomain([formatDate(Day_30), formatDate(Tomorow)])
+//                         .station(station)
+//                         .sensor(sensor)
+//                         .onClickAction(function(d, i) { console.error (d, i); })
+//                         .toHumanDate(formulaConverter ('strDate', 'ISO'))
+//                         .Color()
+//                         .nude(true);
+
+//     barChart.loader(container);
+// }
+// function include_barChart(container, station, sensor, XdisplaySizePxl)
+// {
+//     var formatDate = d3.time.format("%Y-%m-%d %H:%M");
+
+//     // on definie notre objet au plus pres de notre besoin.
+//     var barChart = timeSeriesChart_barChart()
+//                         .width(XdisplaySizePxl)
+//                         .ajaxUrl("/data/cumul")
+//                         // .date(function(d) { return formatDate.parse (d.date); })
+//                         .dateParser("%Y-%m-%d %H:%M")
+//                         .dateDomain([formatDate(Day_30), formatDate(Tomorow)])
+//                         .station(station)
+//                         .sensor(sensor)
+//                         .onClickAction(function(d, i) { console.error (d, i); })
+//                         .toHumanDate(formulaConverter ('strDate', 'ISO'))
+//                         .Color();
+
+//     barChart.loader(container);
+// }
 
 
+
+
+
+
+
+
+
+var color=d3.scale.category20();
 function timeSeriesChart_barChart() {
   var   data,
-        margin = {top: 5, right: 5, bottom: 20, left: 40},
+        margin = {top: 5, right: 5, bottom: 28, left: 40},
         width = 600,
         height = 160,
         station = null,
         sensor = null,
         dataheader = null,
+        dateDomain = [formatDate(new Date(0)), formatDate(new Date())],
         ajaxUrl = null,
+        nude = false,
         onClickAction = function(d) { console.error (d); },
         unit = false,
-        toHumanUnit = formulaConverter ('unknow', unit),
-        toHumanDate = formulaConverter ('strDate', 'ISO'),
-        dateParser = null,
+        md5 = false,
+        darkColor = false,
+        lightColor = false,
+        toHumanUnit = function(SI){if (!arguments.length) return '';return +SI;},
+        toHumanDate = function(SI){if (!arguments.length) return '';return +SI;},
+        timeFormat = d3.time.format("%Y-%m-%dT%H:%M:%S"),
+        dateParser = function(d) { return timeFormat.parse (d.date); },
         val = function(d) { return toHumanUnit(+d.val); },
         xScale = d3.time.scale().range([0, width]),
         yScale = d3.scale.linear().range([height, 0]),
@@ -50,7 +94,8 @@ function timeSeriesChart_barChart() {
 
     function chart(selection) {
         md5 = MD5(station+sensor+(new Date()).getMilliseconds());
-        // console.log(selection);
+        if (!darkColor)  darkColor=color(md5+'0');
+        if (!lightColor)  lightColor=color(md5+'1');
         //selection represente la liste de block ou ecire les donnees
         selection.each(function(rawdata) {
             // Convert data to standard representation greedily;
@@ -67,6 +112,8 @@ function timeSeriesChart_barChart() {
                         ]
                     };
             });
+        if (nude)
+            margin.right = width - margin.left - ((data.length)*4-3);
 
             // Update the x-scale.
             xScale
@@ -77,7 +124,6 @@ function timeSeriesChart_barChart() {
             yScale
                 .domain(d3.extent(data, function(d) {return +d.val; }))
                 .range([height - margin.top - margin.bottom, 0]);
-            // console.log(toHumanUnit, [toHumanUnit(dataheader.min),toHumanUnit(dataheader.max)]);
 
             // Select the svg element, if it exists.
             var svg = d3.select(this).selectAll("svg").data([data]);
@@ -86,8 +132,17 @@ function timeSeriesChart_barChart() {
             // Otherwise, create the skeletal chart.
             var gEnter = svg.enter()
                         .append("svg")
-                            .attr("width", "100%")
+                            .attr("viewBox", "0 0 "+width+" "+height)
+                            .attr("width", function(){return nude ? width : "100%";})
                             .attr("height", height);
+
+            // chose the possition of x-Axis
+            if (0<yScale.domain()[0])
+                xPos = yScale.range()[0];
+            else if (yScale.domain()[1]<0)
+                xPos = yScale.range()[1];
+            else
+                xPos = yScale(0);
 
             gEnter.append("svg:clipPath")
                 .attr("id", "" + md5)
@@ -98,25 +153,13 @@ function timeSeriesChart_barChart() {
             var timeoutID=null;
             var Sensitive = svg.append("rect")
                 .attr("class", "sensitive")
+                .attr('log_test-truc','la_1')
                 .attr('width', width - margin.left - margin.right)
                 .attr('height', height - margin.top - margin.bottom)
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
             var g = gEnter.append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-            // chose the possition of x-Axis
-            if (0<yScale.domain()[0])
-                xPos = yScale.range()[0];
-            else if (yScale.domain()[1]<0)
-                xPos = yScale.range()[1];
-            else
-                xPos = yScale(0);
-
-            // gEnter.append("path").attr("class", "line");
-            g.append("g").attr("class", "x axis");
-            g.append("g").attr("class", "y axis");
-
             // Draw stepPetalsBox block (on mouse hover point view foreach rose)
             var BarBox = g.selectAll(".BarBox")
                 .data(data)
@@ -128,51 +171,136 @@ function timeSeriesChart_barChart() {
                         .attr("class", "bar")
                         .append("title");
 
-            g.updateCurve = function(){
-                yScale.domain(
-                    d3.extent(
-                        data.filter(function(element, index, array){
-                          return (element.date>=xScale.domain()[0] && element.date<=xScale.domain()[1]);
-                      }), function(d) {return d.val; }));
-                this.selectAll(".BarBox rect")
-                            .attr("x", X)
-                            .attr("y", Y)
-                            .attr("width", 8)
-                            .attr("height", function(d) {return Math.abs(xPos-Y(d));})
-                            .on("click", function(d) { return onClickAction(d); })
-                            .select('title')
-                            .text(function(d) {
-                                    return formatVal(+d.val)+" (in "+dataheader.step+"min)\nFrom : "+toHumanDate(d.period[0])+"\nto : "+toHumanDate(d.period[1]);
-                                });
+            if (!nude) {
+                g.append("g").attr("class", "x axis");
+                g.append("g").attr("class", "y axis");
 
-                return this;
-            }
+                g.updateCurve = function(){
+                    yScale.domain(
+                        d3.extent(
+                            data.filter(function(element, index, array){
+                              return (element.date>=xScale.domain()[0] && element.date<=xScale.domain()[1]);
+                          }), function(d) {return d.val; }));
+                    this.selectAll(".BarBox rect")
+                                .attr("x",  function (d) { return X(d) -(4+1);})
+                                .attr("y", Y)
+                                .attr("width", 8)
+                                .attr("height", function(d) {return Math.abs(xPos-Y(d));})
+                                .attr("stroke", darkColor)
+                                .attr("fill", lightColor)
+                                .on("click", function(d) { return onClickAction(d); })
+                                .on("mouseover", function(d) {
+                                        legendDate.text(timeFormat(d.date,' '));
+                                        legendVal.text(formatVal(d.val));
+                                        // legendSum.text("∑ "+formatVal(toHumanUnit(dataheader.sum), 0));
+                                    })
+                                .select('title')
+                                .text(function(d) {
+                                        return formatVal(+d.val)+" (in "+dataheader.step+"min)\nFrom : "+toHumanDate(d.period[0])+"\nto : "+toHumanDate(d.period[1]);
+                                    });
+                    return this;
+                }
+                g.drawAxis = function() {
+                    // Update the x-axis.
+                    this.select(".x.axis")//.transition().duration(1000)
+                        .attr("transform", "translate(-1," + (xPos+12) + ")") // axe tjrs en bas : yScale.range()[0] + ")")
+                        .call(xAxis);
+                    this.select(".y.axis")
+                        .attr("transform", "translate(-1,0)")
+                        .call(yAxis);
+                    legendSum.text(Sum);
+                    return this;
+                }
+                var legend = g.append("g")
+                    .attr("class", "legend")
+                    .attr("transform", "translate(0,"+(height - margin.bottom +5)+")")
+                    .attr("fill", darkColor);
 
-            g.drawAxis = function(){
-                // Update the x-axis.
-                this.select(".x.axis")
-                    .attr("transform", "translate(0," + xPos + ")") // axe tjrs en bas : yScale.range()[0] + ")")
-                    .call(xAxis);
-                this.select(".y.axis")
-                    .attr("transform", "translate(0,0)")
-                    .call(yAxis);
+                var legendTitle = legend.append('text')
+                    .attr("class","title")
+                    .text(dataheader.sensor.SEN_HUMAN_NAME);
 
-                return this;
-            }
-            // Update the outer dimensions.
-            svg .attr("width", width)
-                .attr("height", height);
+                var legendXleft = width - margin.left - margin.right - 4;
+                var legendDate = legend.append('text')
+                    .attr("class","date")
+                    .attr('x', legendXleft-(formatVal(dataheader.max).length+2)*6)
+                    .text('Scroll for Zoom');
+                   // console.log(legendDate.getComputedTextLength());
 
-            Sensitive.call(zm=d3.behavior.zoom().x(xScale).scaleExtent([1,1000]).on("zoom", function(){
-                window.clearTimeout(timeoutID);
-                timeoutID = window.setTimeout(function(){zoom(g)}, 400);                
+                var legendVal = legend.append('text')
+                    .attr("class","val")
+                    .attr('x', legendXleft)
+                    .text(formatVal(data[data.length-1].val));
+
+
+                var Sum = function() {return "∑ = "+formatVal(toHumanUnit(dataheader.sum), 2);},
+                    legendSum = legend.append('text')
+                        .attr("class","Infos")
+                        .attr('x', legendXleft/2)
+                        .text(Sum);
+
+                // Update the outer dimensions.
+                svg .attr("width", width)
+                    .attr("height", height);
+
+                Sensitive.call(zm=d3.behavior.zoom().x(xScale).scaleExtent([1,1000]).on("zoom", function(){
+                    window.clearTimeout(timeoutID);
+                    timeoutID = window.setTimeout(function(){zoom(g)}, 400);                
+                    g.updateCurve()
+                     .drawAxis ();
+                    // console.TimeStep('Zoom');
+                }));
+
                 g.updateCurve()
-                 .drawAxis ();
-                // console.TimeStep('Zoom');
-            }));
+                 .drawAxis();
+            }
+            else {
+                g.updateCurve = function(){
+                    yScale.domain(
+                        d3.extent(data, function(d) {return d.val; }));
+                    this.selectAll(".BarBox rect")
+                                .attr("x", function (d) { return X(d)+1;})
+                                .attr("y", height)
+                                .attr("width", 2)
+                                .attr("stroke", darkColor)
+                                .attr("fill", lightColor)
+                                .transition().delay(function (d,i) { return i*50;}).duration(500)
+                                .attr("height", function(d) {return Math.abs(xPos-Y(d));})
+                                .attr("y", Y)
+                                .select('title')
+                                .text(function(d) {
+                                        return formatVal(+d.val)+"\nFrom : "+toHumanDate(d.period[0])+"\nto : "+toHumanDate(d.period[1]);
+                                    });
 
-            g.updateCurve()
-             .drawAxis();
+                    return this;
+                }
+                g.updateCurve();
+                var legend = gEnter.append("g")
+                    .attr("class", "legend")
+                    .attr("transform", "translate("+(width - margin.right+2)+",0)")
+                    // .attr("transform", "translate(0,"+(height - margin.bottom +5)+")")
+                    .attr("fill", darkColor);
+
+                var legendmax = legend.append('text')
+                    .attr("class","legend_max")
+                    .attr("y", (6))
+                    .text('↑ '+formatVal(toHumanUnit(dataheader.max), 1))
+                    .append('title')
+                        .text('↑ max:'+formatVal(toHumanUnit(dataheader.max), 2));
+                var legendavg = legend.append('text')
+                    .attr("class","legend_avg")
+                    .attr("y", (height+6)/2)
+                    .text('↔ '+formatVal(toHumanUnit(dataheader.avg), 2))
+                    .append('title')
+                        .text('↔ Avg:'+formatVal(toHumanUnit(dataheader.avg), 3));
+                var legendmin = legend.append('text')
+                    .attr("class","legend_min")
+                    .attr("y", (height-2))
+                    .text("∑ "+formatVal(toHumanUnit(dataheader.sum), 0))
+                    .append('title')
+                        .text("∑ Sum:"+formatVal(toHumanUnit(dataheader.sum), 2));
+
+            }
         });
     }  
 
@@ -201,7 +329,7 @@ function timeSeriesChart_barChart() {
             });
             
             data = data.filter(function(element, index, array){
-                      return (element.date<data2add[0].date || element.date>data2add[data2add.length-1].date);
+                      return (element.date<data2add[0].date || (element.date>data2add[data2add.length-1].date && element.date<(new Date())) );
                   })
 
             var bars = g.selectAll(".BarBox")
@@ -225,8 +353,7 @@ function timeSeriesChart_barChart() {
                         .append("title");
         };
 
-        d3.tsv( ajaxUrl + "?station="+ station +"&sensor=" + sensor + "&XdisplaySizePxl="+width+"&Since="+formatDate(zmDomain[0],'T')+"&To="+formatDate(zmDomain[1]
-,'T'),
+        d3.tsv( ajaxUrl + "?station="+ station +"&sensor=" + sensor + "&XdisplaySizePxl="+width+"&Since="+formatDate(zmDomain[0],'T')+"&To="+formatDate(zmDomain[1],'T'),
             function(data2add) {
                 if (ready) {
                     DomBuilder(data2add);
@@ -264,23 +391,27 @@ function timeSeriesChart_barChart() {
         return yScale(+d.val);
     }
 
-    function formatVal(v) {
+    function formatVal(v, decimal) {
+        if (arguments.length<2)
+            decimal=2;
         //console.log(v, (+v).toPrecision(5));
-        return (+v).toFixed(2) + toHumanUnit();
+        return (+v).toFixed(decimal) +' '+ toHumanUnit();
     }
 
 // ================= Property of chart =================
 
     chart.loader = function(container) {
         var ready = false,
-            dataTsv = false;
+            dataTsv = false,
+            w = (width - margin.left - margin.right) * (nude*2+1);
+
         // on demande les infos importante au sujet de notre futur tracé
         // ces infos permettent de finir le parametrage de notre "Chart"
         // on charge les données et on lance le tracage
-        d3.tsv( ajaxUrl + "?station="+ station +"&sensor="+ sensor +"&XdisplaySizePxl="+width, //+"&Since=2013-05-30T10:00"+"&To=2013-05-31T06:00",
+        d3.tsv( ajaxUrl + "?station="+ station +"&sensor="+ sensor +"&XdisplaySizePxl="+w+"&Since="+dateDomain[0]+"&To="+dateDomain[1],
             function(data) {
-                console.TimeStep('load Data');
-                console.log(data);
+                // console.TimeStep('load Data');
+                // console.log(data);
                 if (ready) {
                     d3.select(container)
                         .datum(data)
@@ -291,10 +422,10 @@ function timeSeriesChart_barChart() {
             }
         );
 
-        d3.json( ajaxUrl + "?station="+ station +"&sensor="+ sensor +"&XdisplaySizePxl="+width+"&infos=dataheader", //&since=2013-05-30T10:00"+"&To=2013-05-31T06:00",
+        d3.json( ajaxUrl + "?station="+ station +"&sensor="+ sensor +"&XdisplaySizePxl="+w+"&infos=dataheader"+"&Since="+dateDomain[0]+"&To="+dateDomain[1],
             function(data) {
-                console.TimeStep('load Header');
-                console.log(data);
+                // console.TimeStep('load Header');
+                // console.log(data);
                 chart
                     .dataheader(data)
                     .toHumanUnit(formulaConverter (data.sensor.SEN_MAGNITUDE, data.sensor.SEN_USER_UNIT));
@@ -314,6 +445,37 @@ function timeSeriesChart_barChart() {
 // ================= Accesseurs =====================
 
 
+    chart.nude = function(_) {
+        if (!arguments.length) return nude;
+        nude = _;
+        if (_) {
+            margin = {top: 1, left: 2, bottom: 1, right: 55};
+        }
+        return chart;
+    };
+    chart.dateParser = function(_) { // genere la fonction de conversion du champ [string]:date en [date]:date
+        if (!arguments.length) return dateParser;
+        if (typeof _ === "string") {
+            timeFormat = d3.time.format(_);
+            dateParser = function(d) { return timeFormat.parse (d.date); };
+        } else dateParser = _;
+        return chart;
+    };
+    chart.dateDomain = function(_) {
+        if (!arguments.length) return dateDomain;
+        dateDomain = _;
+        return chart;
+    };
+    chart.Color = function(_) {
+        if (/(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(_)) {
+            darkColor = _;
+            lightColor = '#c7c7c7';
+        } else {
+            darkColor = color(_+'1');
+            lightColor = color(_+'2');
+        }
+        return chart;
+    };
     chart.margin = function(_) {
         if (!arguments.length) return margin;
         margin = _;
