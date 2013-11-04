@@ -188,23 +188,23 @@ function timeSeriesChart_histoWind() {
                                 "\nAverage on: "+toHumanDate(d.date) ;
                     });
 
-            g.updateCurve = function(){
-                // Draw arrow block
-                var xExtend=xScale.domain();
-                //Draw the line
-                this.selectAll('.hair,.hair2')
-                    // on deplace en fonction du nouveau referentiel
-                    .attr("x1", function(d) { return xScale(d.date); })
-                    .attr("y1", function(d) { return yScale(0); })
-                    .attr("x2", function(d) { return xScale(d.date) + d.xSpeed*coef; })
-                    .attr("y2", function(d) { return yScale(d.ySpeed); })
-                    .attr("stroke", darkColor)
-                    // on cache les elements hors referentiel
-                    .attr("display", function(d) {return (d.date>=xExtend[0] && d.date<=xExtend[1])?'inline':'none'; });
-
-                return this;
-            }
             if (!nude) {
+                g.updateCurve = function(){
+                    // Draw arrow block
+                    var xExtend=xScale.domain();
+                    //Draw the line
+                    this.selectAll('.hair,.hair2')
+                        // on deplace en fonction du nouveau referentiel
+                        .attr("x1", function(d) { return xScale(d.date); })
+                        .attr("y1", function(d) { return yScale(0); })
+                        .attr("x2", function(d) { return xScale(d.date) + d.xSpeed*coef; })
+                        .attr("y2", function(d) { return yScale(d.ySpeed); })
+                        .attr("stroke", darkColor)
+                        // on cache les elements hors referentiel
+                        .attr("display", function(d) {return (d.date>=xExtend[0] && d.date<=xExtend[1])?'inline':'none'; });
+
+                    return this;
+                }
                 g.drawAxis = function(){
                 // chose the possition of x-Axis
                     if (0<yScale.domain()[0])
@@ -234,7 +234,23 @@ function timeSeriesChart_histoWind() {
                  .drawAxis();
             }
             else {
-
+            g.updateCurve = function(){
+                    // Draw arrow block
+                    var xExtend=xScale.domain();
+                    //Draw the line
+                    this.selectAll('.hair,.hair2')
+                        .attr("stroke", darkColor)
+                        .attr("display", 'none')
+                        .attr("x1", function(d) { return xScale(d.date); })
+                        .attr("y1", function(d) { return yScale(0); })
+                        .attr("x2", function(d) { return xScale(d.date); })
+                        .attr("y2", function(d) { return yScale(0); })
+                        .transition().delay(function (d,i) { return i*25;}).duration(500)
+                        .attr("display", 'inline')
+                        .attr("x2", function(d) { return xScale(d.date) + d.xSpeed*coef; })
+                        .attr("y2", function(d) { return yScale(d.ySpeed); });
+                    return this;
+                }
                 g.updateCurve();
             }
 

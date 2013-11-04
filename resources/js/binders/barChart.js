@@ -257,17 +257,16 @@ function timeSeriesChart_barChart() {
             else {
                 g.updateCurve = function(){
                     yScale.domain(
-                        d3.extent(
-                            data.filter(function(element, index, array){
-                              return (element.date>=xScale.domain()[0] && element.date<=xScale.domain()[1]);
-                          }), function(d) {return d.val; }));
+                        d3.extent(data, function(d) {return d.val; }));
                     this.selectAll(".BarBox rect")
                                 .attr("x", function (d) { return X(d)+1;})
-                                .attr("y", Y)
+                                .attr("y", height)
                                 .attr("width", 2)
-                                .attr("height", function(d) {return Math.abs(xPos-Y(d));})
                                 .attr("stroke", darkColor)
                                 .attr("fill", lightColor)
+                                .transition().delay(function (d,i) { return i*50;}).duration(500)
+                                .attr("height", function(d) {return Math.abs(xPos-Y(d));})
+                                .attr("y", Y)
                                 .select('title')
                                 .text(function(d) {
                                         return formatVal(+d.val)+"\nFrom : "+toHumanDate(d.period[0])+"\nto : "+toHumanDate(d.period[1]);
@@ -330,7 +329,7 @@ function timeSeriesChart_barChart() {
             });
             
             data = data.filter(function(element, index, array){
-                      return (element.date<data2add[0].date || element.date>data2add[data2add.length-1].date);
+                      return (element.date<data2add[0].date || (element.date>data2add[data2add.length-1].date && element.date<(new Date())) );
                   })
 
             var bars = g.selectAll(".BarBox")

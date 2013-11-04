@@ -143,24 +143,6 @@
     .legend .Infos {
         text-anchor:middle;
     }
-    .arrow:hover>.hair, .arrow:hover>.marker {
-        stroke: #E6550D;
-        stroke-width: 2px;
-    }
-    /*Blue:#1F77B4 #3182bd #6baed6*/
-    /*Red:#E6550D*/
-    .hair {
-        fill: none;
-        stroke: #3182bd;
-        stroke-width: 1px;
-        /*shape-rendering: crispEdges;*/
-    }
-    .marker {
-        fill: #FFF;
-        stroke: #3182bd;
-        stroke-width: .7px;
-        /*shape-rendering: crispEdges;*/
-    }
 
 
 
@@ -220,21 +202,48 @@
       stroke-width: 1px;
       shape-rendering: crispEdges;
     }
-    
-    .arrow:hover>.hair {
+
+
+/*    .arrow:hover>.hair, .arrow:hover>.marker {
         stroke: #E6550D;
         stroke-width: 2px;
-        marker-end:url(#arrowheadHover);
+    }*/
+    /*Blue:#1F77B4 #3182bd #6baed6*/
+    /*Red:#E6550D*/
+/*    .hair {
+        fill: none;
+        stroke: #3182bd;
+        stroke-width: 1px;
+        shape-rendering: crispEdges;
+    }*/
+/*    .marker {
+        fill: #FFF;
+        stroke: #3182bd;
+        stroke-width: .7px;
+        shape-rendering: crispEdges;
+    }*/
+
+    .arrow, .arrow>.hair {
+        stroke-width: 1px;
+    }
+    .arrow:hover, .arrow:hover>.hair {
+        stroke-width: 2px;
+    }
+    .arrow:hover>.hair2 {
+        stroke-width: 10px;
     }
 
     /*Blue:#1F77B4 #3182bd #6baed6*/
     /*Red:#E6550D*/
     .hair {
         fill: none;
-        stroke: #3182bd;
-        marker-end:url(#arrowhead);
     }
-
+    .hair2 {
+        fill: none;
+        stroke: #3182bd;
+        stroke-width: 5px;
+        stroke-opacity: 0;
+    }
     marker polygon {
         fill:#FFF;
     }
