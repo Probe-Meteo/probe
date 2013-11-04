@@ -65,6 +65,8 @@ class Page_manager {
             );
         }
 
+        $this->addData('page_title_suffix', $this->_CI->config->item('page.title:suffix.metadata'));
+
         $this->setStatus();
 
         $this->_CI->load->view('templates/header', $this->data);

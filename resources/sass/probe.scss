@@ -47,22 +47,42 @@ circle:hover+.petals {
     position:absolute;
 }
 
-.breadcrumb {
+.navbar {
+ & .divider-vertical {
+    height: 20px;
+  }
+  & .breadcrumb {
+    .dropdown-menu {
+      min-width: 80px;
+    }
     @include border-radius(0);
-    border-bottom: thin solid $navbarBorder;
+  background-color: transparent;
+    //border-bottom: thin solid $navbarBorder;
   padding-right : 0;
-  width : 75%;
-  float: left;
-}
-.breadcrumb .active {
-  font-weight: bold;
-  > a {
-    color: $gray;
+  //width : 75%;
+  //float: left;
+  & > li {
+    & > a {
+      display: inline-block;
+      padding: 0;
+    }
+  }
+  & .active {
+    font-weight: bold;
+    > a {
+      color: $gray;
+      background : inherit;
+      box-shadow: none;
+    }
+  }
+  .disabled {
+    //color: $b;
   }
 }
+}
 #access-profile {
-  float: right;
-  width: 25%;
+  //float: right;
+  //width: 25%;
   padding-left : 0;
   margin-left : -$breadcrumbPadding*2;
   padding-right : $breadcrumbPadding;
@@ -135,9 +155,9 @@ input[type='submit'].icon-arrow-right {
    Author:
    ========================================================================== */
 
-.container {
-  margin-top: 3em;
-}
+//.container {
+//  margin-top: 3em;
+//}
 
 .setup, .login, #logout {
     @extend .modal;
