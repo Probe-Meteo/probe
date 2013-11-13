@@ -149,8 +149,8 @@ class Station extends CI_Model {
 		include_once(APPPATH.'models/'.$type.'.php');
 		$Current_WS = new $type($conf);
 		$Last_Arch = $Current_WS->get_Last_Date();
-		if (!isset($conf['time:archive:period'])
-			|| strtotime(date ("Y/m/d H:i:s")) > strtotime($Last_Arch) + $conf['time:archive:period']*60*2)
+		if (!isset($conf['Time:Archive:Period'])
+			|| strtotime(date ("Y/m/d H:i:s")) > strtotime($Last_Arch) + $conf['Time:Archive:Period']*60*2)
 		{
 			try {
 				if ( !$Current_WS->initConnection() )
@@ -163,6 +163,7 @@ class Station extends CI_Model {
 	
 				// on lit et sauve les configs
 				$readconf = end ($Current_WS->GetConfig ( ));
+				log_message('var', var_export($readconf, true));
 				foreach ($readconf as $key => $val) {
 					if (strpos($key, 'TR:Config:')!==FALSE) {
 						$ToStoreConfig[str_replace('TR:Config:', '', $key)] = $val;

@@ -82,12 +82,10 @@ class vp2 extends CI_Model {
 	function chekpolitness () {
 		where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,array($this->conf['_name']));
 		$this->lockFile = dirname(__FILE__).'/'.$this->conf['_name'].'.lock';
-		$end = @file_get_contents($this->lockFile);
-
-		if ($end===FALSE // impossible de lire le contenu
-			|| strtotime(date ("Y/m/d H:i:s")) > strtotime($end) + 60 * 5) // lock agé de plus de 5min
+		if (!file_exists($this->lockFile) // fichier n'exite pas
+			|| strtotime(date ("Y/m/d H:i:s")) > strtotime(file_get_contents($this->lockFile)) + 60 * 5) // lock agé de plus de 5min
 		{
-			file_put_contents($this->lockFile, date ("Y/m/d H:i:s"));
+			file_put_contents($this->lockFile, date ("Y/m/d H:i:s")."\n");
 			return true;
 		}
 		log_message('infos', sprintf(
@@ -123,8 +121,8 @@ class vp2 extends CI_Model {
 				}
 			}
 		}
-		if (!unlink($this->lockFile))
-			rename($this->lockFile, ".trash");
+		if (!@unlink($this->lockFile))
+			@rename($this->lockFile, ".trash");
 		return FALSE;
 	}
 
@@ -137,8 +135,8 @@ class vp2 extends CI_Model {
 	function CloseConnection()	{
 		where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,array($this->conf['_name']));
 		// $this->toggleBacklight(0);
-		if (!unlink($this->lockFile))
-			rename($this->lockFile, ".trash");
+		if (!@unlink($this->lockFile))
+			@rename($this->lockFile, ".trash");
 		if (fclose($this->fp)) {
 			log_message('infos', sprintf(
 			    i18n('cli-info.close-connexion[%s]:success.label'),
@@ -368,12 +366,11 @@ Lis les valeur d´archive a partir d´une date
 		$DATAS=false;
 		try {
 			if (!$this->OffsetTime) $this->OffsetTime = $this->OffsetTime();
-			$firstDate2Get=is_date($last);
+			$firstDate2Get=round_date(is_date($last), $this->conf['Time:Archive:Period']);
 			$this->RequestCmd("DMPAFT\n");
 			$RawDate = DMPAFT_SetVP2Date($firstDate2Get);
 			// log_message('infos', 'firstDate2Get : '.$firstDate2Get.'. RawDate : '.$RawDate);
 			fwrite($this->fp, $RawDate);				// Send this date (parametre #1)
-
 			$crc = CalculateCRC($RawDate);			// define the CRC of my date
 			$this->RequestCmd($crc);					// Send the CRC (parametre #2)
 			$data = fread($this->fp, 6);				// we read the properties : item count and first item position
@@ -435,12 +432,17 @@ Compare l'heure de la station a celle du serveur web et lance la synchro si beso
 		$TIME = False;
 		// compare les date au format ISO 8601 (2004-02-12T15:19:21+00:00)
 		$VP2_Time_Str = $this->fetchStationTime();
-		if ($VP2_Time_Str) {
+		if ($VP2_Time_Str && is_date($VP2_Time_Str)) {
+
 			$VP2_Time = strtotime($VP2_Time_Str);
 			$realLag = $VP2_Time - strtotime(date('c'));
 
 			log_message('warning',  "Real\t\t: ".date('c')."\n".$this->conf['_name']."\t: ".$VP2_Time_Str."\nLags\t\t: ".$realLag.' Sec');
 			
+			
+		$filepath = 'log-SETTIME-'.date('Y-m-d').'.php';
+		file_put_contents($filepath , date('Y-m-d H:i:s').' - [SETTIME '.$this->conf['_name'].'] : SRV-GMT>'.gmdate("Y-m-d\TH:i:s\Z").' '.$VP2_Time_Str.' '.gmdate("Y-m-d\TH:i:s\Z", strtotime($VP2_Time_Str)).' lags:'.(strtotime(gmdate("Y-m-d\TH:i:s\Z", strtotime($VP2_Time_Str)))-strtotime(gmdate("Y-m-d\TH:i:s\Z")))."\n", FILE_APPEND);
+
 			if (abs($realLag) > $maxLag) {
 				if ($TIME = $this->updateStationTime(strftime('%Y-%m-%dT%H:%M:%S', $VP2_Time - $realLag))) { // date('Y-m-dTH:i:s')
 					log_message('infos', i18n('Clock synchronizing.'));
@@ -476,7 +478,6 @@ Lis l'heure de la station
 		// 0x35 16 00 1d 0c 6f  0x7c 44  ==  2011/12/29 00:22:53
 		if (!$this->OffsetTime) $this->OffsetTime = $this->OffsetTime();
 
-		$TIME = False;
 		try {
 			$this->RequestCmd("GETTIME\n");
 			$TIME = fread($this->fp, 8);
@@ -494,7 +495,7 @@ Lis l'heure de la station
 		catch (Exception $e) {
 			log_message('error',  $e->getMessage());
 		}
-		return $TIME;
+		return false;
 	}
 
 /**
@@ -528,7 +529,11 @@ Force l´heure de la station a la meme heure que le serveur web
 			list($h,$i,$s) = explode(':', $_clock);
 			$TIME = chr($s).chr($i).chr($h).chr($d).chr($m).chr($y-1900);
 			$this->RequestCmd ($TIME . CalculateCRC($TIME));
-			// log_message('infos', '[SETTIME] : '.$_date.' '.$_clock);
+			log_message('infos', '[SETTIME] : '.$_date.' '.$_clock);
+
+		$filepath = 'log-SETTIME-'.date('Y-m-d').'.php';
+		file_put_contents($filepath , date('Y-m-d H:i:s').' - [SETTIME '.$this->conf['_name'].'] : put>'.$_date.' '.$_clock.' '.$time."\n", FILE_APPEND);
+
 			return $_date.'T'.$_clock;
 		}
 		catch (Exception $e) {

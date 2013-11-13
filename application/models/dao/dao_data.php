@@ -13,11 +13,7 @@ class dao_data extends CI_Model {
         where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__);
         $this->dataDB = $this->load->database($station, TRUE);
         $this->SEN_LST = $this->sensor_list();
-        if (!empty($sensor)) {
-            $this->SEN_ID = $this->SEN_LST[$sensor];
-            $this->SEN_TABLE = tableOfSensor($sensor);
-            $this->SEN_DTL = $this->sensor_detail($this->SEN_ID);
-        }
+        $this->load_sensor($sensor);
     }
 
 /**
@@ -26,9 +22,24 @@ class dao_data extends CI_Model {
     * @param 
     * @param 
     */
-    function index(){
+    function load_sensor($sensor) {
         where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,func_get_args());
-        $query = "SELECT * FROM `TR_SENSOR` LIMIT 0 , 100";
+        if (!empty($sensor)) {
+            $this->SEN_ID = $this->SEN_LST[$sensor];
+            $this->SEN_TABLE = tableOfSensor($sensor);
+            $this->SEN_DTL = $this->sensor_detail($this->SEN_ID);
+        }
+    }
+
+/**
+return list of sensor for current station
+    * @
+    * @param 
+    * @param 
+    */
+    function index() {
+        where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,func_get_args());
+        $query = "SELECT * FROM `TR_SENSOR` LIMIT 0 , 1000";
         $query_result = $this->dataDB->query($query);
         $brut = $query_result->result_array($query_result);
         // $reformated = null;

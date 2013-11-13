@@ -51,8 +51,20 @@ class Data extends CI_Controller {
 
 		$this->Station = end($this->station->config($station));
 		// where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,array($this->SEN_DTL,$RAIN_COLLECTOR));
-		$this->dataReader = new dao_data($this->Station, $this->sensor);
+		$this->load_dataReader($this->Station, $this->sensor);
+	}
+
+
+/**
+load php class for dataReader
+	* @
+	* @param 
+	* @param 
+	*/
+	function load_dataReader($station, $sensor) {
+        where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,func_get_args());
 	    $RAIN_COLLECTOR = array(0=>0.01, 1=>0.2, 2=>0.1); 
+		$this->dataReader = new dao_data($station, $sensor);
 		$this->info = array("ISS"=>array(
 			"lat" => $this->Station['Geo:Latitude:NordValue'],
 			"lon" => $this->Station['Geo:Longitude:EstValue'],
@@ -62,11 +74,11 @@ class Data extends CI_Controller {
 			"wCup" => $this->Station['Wind:Cup:Large'],
 			"rConv" => $RAIN_COLLECTOR [$this->Station['Rain:Collector:Size']] ),
 		"sensor" => $this->dataReader->SEN_DTL);
+		return $this->dataReader;
 	}
 
-
 /**
-
+Set sensor for next request
 	* @
 	* @param 
 	* @param 
@@ -76,9 +88,8 @@ class Data extends CI_Controller {
 		return $this->sensor;
 	}
 
-
 /**
-
+return JSON list contain list of sensor for this station
 	* @
 	* @param 
 	* @param 
@@ -109,8 +120,6 @@ return an Json Obj of all currents value LOOP, LOOP2, HILOW
 		else $this->dl_dataHeader($dataHeader);
 	}
 
-
-
 /**
 make and download tsv curve of a sensor
 	* @
@@ -118,25 +127,60 @@ make and download tsv curve of a sensor
 	* @param lenght is the number of day
 	* @param is the sensor name (one or more)
 	*/
-	function curve(){
-		$dataHeader = $this->dataReader->estimate ( $this->Since, $this->To, $this->XdisplaySizePxl/2 );
-		where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,array($this->Station['_name'], $this->Since,	$this->To,	$this->XdisplaySizePxl, $dataHeader));
+	function curve() {
+        where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,func_get_args());
+			// for real sensor, we read directly data in EAV table
+			if ($this->info['sensor']['SEN_ID']>0) {
+				$dataHeader = $this->dataReader->estimate ( $this->Since, $this->To, $this->XdisplaySizePxl/2 );
+				// where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,array($this->Station['_name'], $this->Since,	$this->To,	$this->XdisplaySizePxl, $dataHeader));
+				if (!$this->infos) {
+					$data = $this->dataReader->curve ($this->Since, $this->To, $dataHeader['step'] );
 
+					$j = count($data);
+					$tsv = '';
+					for ($i=0;$i<$j;$i++) {
+						$tsv .= substr(	$data[$i]['UTC_grp'],0,-3)."\t".
+										$data[$i]['value']."\n";
+					}
 
-		if (!$this->infos) {
-			$data = $this->dataReader->curve ($this->Since, $this->To, $dataHeader['step'] );
-
-			$j = count($data);
-		    $tsv = '';
-		    for ($i=0;$i<$j;$i++) {
-				$tsv .= substr(	$data[$i]['UTC_grp'],0,-3)."\t".
-								$data[$i]['value']."\n";
+					$this->dl_tsv ("date\tval\n".trim($tsv,"\n"));
+					$this->dl_tsv ($data);
+				}
+				else {
+					$this->dl_dataHeader($dataHeader);
+				}
 			}
+			// for virtual sensor, we read data for each sensor dependance
+			else {
+				// where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,array($this->Station['_name'], $this->Since,	$this->To,	$this->XdisplaySizePxl, $dataHeader));
+				$this->dataReader->load_sensor('TA:Arch:Temp:Out:Average');
+				$dataHeader = $this->dataReader->estimate ( $this->Since, $this->To, $this->XdisplaySizePxl/2 );
+				if (!$this->infos) {
+					// var_export($this->info);
+					$sensor_lst = json_decode($this->info['sensor']['SEN_DEPENDENCY_JSON'], true);
+					$title="date";
 
-			$this->dl_tsv ("date\tval\n".trim($tsv,"\n"));
-	        $this->dl_tsv ($data);
-		}
-		else $this->dl_dataHeader($dataHeader);
+					foreach ($sensor_lst as $key => $sensor) {
+						$this->dataReader->load_sensor($sensor);
+						$title .= "\t".$key;
+						$data[$key] = $this->dataReader->curve ($this->Since, $this->To, $dataHeader['step'] );
+					}
+
+					foreach ($data[$key] as $i => $value) {
+						$tsv .= substr($data[$key][$i]['UTC_grp'],0,-3);
+						foreach ($data as $sensorData) {
+							$tsv .= "\t".$sensorData[$i]['value'];
+						}
+						$tsv .= "\n";
+					}
+
+					$this->dl_tsv ($title."\n".trim($tsv,"\n"));
+					$this->dl_tsv ($data);
+				}
+				else {
+					$this->dl_dataHeader($dataHeader);
+				}
+			}
 	}
 
 /**
@@ -203,6 +247,7 @@ make and download json bracketCurve of a sensor
 		}
 		else $this->dl_dataHeader($dataHeader);
 	}
+
 /**
 make and download json wind data
 	* @
@@ -221,6 +266,7 @@ make and download json wind data
 		}
 		else $this->dl_dataHeader($dataHeader);
 	}
+
 /**
 make and download json wind data for vectorial HairChart
 	* @
@@ -296,7 +342,6 @@ Download after convert data structure to json object
 		force_download('data.json', $json);
 	}
 
-
 /**
 Download after convert data structure to json object
 	* @
@@ -307,7 +352,8 @@ Download after convert data structure to json object
 		// ob_clean();
 		@ob_end_clean();
 		header_remove();
-		force_download('data.json', $json);		}
+		force_download('data.json', $json);
+	}
 
 /**
 Download tsv file
