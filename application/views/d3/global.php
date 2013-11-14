@@ -131,29 +131,15 @@
 			</style>
 
 			<table id="global-table" class="tg-table-light">
-			  <tr>
-			    <th class="tg-center">Sensor</th>
-			    <th class="tg-center tg-bf">Current</th>
-			    <th class="tg-center Month">Month</th>
-			    <th class="tg-center Week">Week</th>
-			    <th class="tg-center Day">Day</th>
-			  </tr>
-			<tboby>
-<!--   <tr class="tg-even">
-    <td class="tg-bf"></td>
-    <td></td>
-    <td class="tg-center">
-		<span id="SvgSC_1" class="SmallCurve24h" style="width:100px">
-
-		</span>
-    </td>
-    <td>
-		<span id="SvgSC_1b" class="SmallCurve7j" style="width:100px">
-
-		</span>
-	</td>
-  </tr> -->
-  			</tboby>
+				<tr>
+					<th class="tg-center">Sensor</th>
+					<th class="tg-center tg-bf">Current</th>
+					<th class="tg-center Month">Month</th>
+					<th class="tg-center Week">Week</th>
+					<th class="tg-center Day">Day</th>
+				</tr>
+				<tboby>
+				</tboby>
 			</table>
         </div>
     </div>

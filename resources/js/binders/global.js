@@ -10,11 +10,15 @@ function probeViewer(){
     d3.json( ajaxUrl + "?station="+ station ,
             function(json) {
                 var lst = d3.select("#global-table tbody")
-                    .selectAll('tr')
-                    .data(json.data)
+                    .selectAll('tr + tr')
+                    .data( json.data.filter(
+                        function(element, index, array) {
+                            return (element.SEN_DISPLAY_LEVEL & 1 == 1);
+                            // return (element.SEN_DISPLAY_LEVEL == 1);
+                        }) )
                     .enter()
                         .append('tr')
-                        .attr('id',function(d) { return str2id(d.SEN_NAME);})
+                        .attr('id',function(d) { console.log(d.SEN_NAME); return str2id(d.SEN_NAME);})
                         .attr('class',function(d,i) { return i%2 ? 'tg-even' : '';});
 
                 lst.append('td')
@@ -174,6 +178,7 @@ function probeViewer(){
                     chartD.loader("#"+str2id(d.SEN_NAME)+'_Day');
                         }
 
+                console.log(lst);
                 lst.each(function(d,i) {
                     // on definie notre objet au plus pres de notre besoin.
                     window.setTimeout(function (){

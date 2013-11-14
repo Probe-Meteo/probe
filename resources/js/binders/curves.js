@@ -479,7 +479,8 @@ function timeSeriesChart_curves() {
                     .dataheader(data)
                     .toHumanUnit(formulaConverter (data.sensor.SEN_MAGNITUDE, data.sensor.SEN_USER_UNIT));
 
-                eval('val='+dataheader.sensor.SEN_FUNCTION+';' );
+                if (dataheader.sensor.SEN_FUNCTION.length>0)
+                    eval('val='+dataheader.sensor.SEN_FUNCTION+';' );
                 // chart.val(xx);
 
                 if (ready) {
