@@ -130,6 +130,7 @@ make and download tsv curve of a sensor
 	function curve() {
         where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,func_get_args());
 			// for real sensor, we read directly data in EAV table
+			$tsv = '';
 			if ($this->info['sensor']['SEN_ID']>0) {
 				$dataHeader = $this->dataReader->estimate ( $this->Since, $this->To, $this->XdisplaySizePxl/2 );
 				// where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,array($this->Station['_name'], $this->Since,	$this->To,	$this->XdisplaySizePxl, $dataHeader));
@@ -137,7 +138,6 @@ make and download tsv curve of a sensor
 					$data = $this->dataReader->curve ($this->Since, $this->To, $dataHeader['step'] );
 
 					$j = count($data);
-					$tsv = '';
 					for ($i=0;$i<$j;$i++) {
 						$tsv .= substr(	$data[$i]['UTC_grp'],0,-3)."\t".
 										$data[$i]['value']."\n";
@@ -287,7 +287,8 @@ make and download json wind data for vectorial HairChart
 								$data[$i]['AvgSpeed']."\t".
 								$data[$i]['AvgDirection']."\t".
 								$data[$i]['x']."\t".
-								$data[$i]['y']."\n";
+								$data[$i]['y'].
+								"\n";
 			}
 
 			$this->dl_tsv ("date\tspeed\tangle\tx\ty\n".trim($tsv,"\n"));
@@ -360,7 +361,7 @@ Download tsv file
 	* @
 	* @param data structure array()
 	*/
-	private function dl_tsv ($data) {
+	private function dl_tsv ($data) {exit();
 		// ob_clean();
 		@ob_end_clean();
 		header_remove();

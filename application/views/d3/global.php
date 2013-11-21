@@ -153,3 +153,4 @@
 <script src="/resources/js/binders/curves.js"></script>
 <script src="/resources/js/binders/barChart.js"></script>
 <script src="/resources/js/binders/histoWind.js"></script>
+<script src="/resources/js/libs/suncalc.js"></script>

@@ -167,4 +167,5 @@
 </script>
 <script src="/resources/js/ProbeTools.js"></script>
 <script src="/resources/js/libs/base64.js"></script>
+<script src="/resources/js/libs/suncalc.js"></script>
 

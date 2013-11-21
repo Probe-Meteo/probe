@@ -122,7 +122,7 @@ this functione estimate the recommanded granularity between 2 date for retunr 10
 
 
 /**
-
+moyenne par intervale de Ganularite, (ameliorer en moienne flotante)
     * @
     * @param $since is the start date of result needed
     * @param $to is the end date of result needed
@@ -140,7 +140,7 @@ this functione estimate the recommanded granularity between 2 date for retunr 10
         GROUP BY UTC_grp
         ORDER BY UTC_grp asc
         LIMIT 0 , 100000";
-
+        
         $query_result = $this->dataDB->query($queryString);
 
         $brut = $query_result->result_array($query_result);
