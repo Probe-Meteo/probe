@@ -73,7 +73,7 @@
     .sensitive {
         opacity: 0;
     }
-    .line, .lineUp , .lineDown  {
+    .line {
         fill: none;
         stroke-width: 1px;
     }
@@ -101,53 +101,53 @@
         Day_365.setDate(Day_365.getDate() -365);
 
         // on definie notre objet au plus pres de notre besoin.
-        // var chartY = timeSeriesChart_curves()
-        //                     .width(52*4+50)
-        //                     .height(40)
-        //                     .dateParser("%Y-%m-%d %H:%M")
-        //                     .dateDomain([formatDate(Day_365), formatDate(new Date())])
-        //                     .station(station)
-        //                     .sensor(sensor)
-        //                     .toHumanDate(formulaConverter ('strDate', 'ISO'))
-        //                     .Color()
-        //                     .nude(true);
-        // chartY.loader("#YearBarChar");
+        var chartY = timeSeriesChart_curves()
+                            .width(52*4+50)
+                            .height(40)
+                            .dateParser("%Y-%m-%d %H:%M")
+                            .dateDomain([formatDate(Day_365), formatDate(new Date())])
+                            .station(station)
+                            .sensor(sensor)
+                            .toHumanDate(formulaConverter ('strDate', 'ISO'))
+                            .Color()
+                            .nude(true);
+        chartY.loader("#YearBarChar");
 
-        // var chartM = timeSeriesChart_curves()
-        //                     .width(30*4+50)
-        //                     .height(40)
-        //                     .dateParser("%Y-%m-%d %H:%M")
-        //                     .dateDomain([formatDate(Day_30), formatDate(new Date())])
-        //                     .station(station)
-        //                     .sensor(sensor)
-        //                     .toHumanDate(formulaConverter ('strDate', 'ISO'))
-        //                     .Color()
-        //                     .nude(true);
-        // chartM.loader("#MonthBarChar");
+        var chartM = timeSeriesChart_curves()
+                            .width(30*4+50)
+                            .height(40)
+                            .dateParser("%Y-%m-%d %H:%M")
+                            .dateDomain([formatDate(Day_30), formatDate(new Date())])
+                            .station(station)
+                            .sensor(sensor)
+                            .toHumanDate(formulaConverter ('strDate', 'ISO'))
+                            .Color()
+                            .nude(true);
+        chartM.loader("#MonthBarChar");
 
-        // var chartW = timeSeriesChart_curves()
-        //                     .width(7*4*4+50)
-        //                     .height(40)
-        //                     .dateParser("%Y-%m-%d %H:%M")
-        //                     .dateDomain([formatDate(Day_7), formatDate(new Date())])
-        //                     .station(station)
-        //                     .sensor(sensor)
-        //                     .toHumanDate(formulaConverter ('strDate', 'ISO'))
-        //                     .Color()
-        //                     .nude(true);
-        // chartW.loader("#WeekBarChar");
+        var chartW = timeSeriesChart_curves()
+                            .width(7*4*4+50)
+                            .height(40)
+                            .dateParser("%Y-%m-%d %H:%M")
+                            .dateDomain([formatDate(Day_7), formatDate(new Date())])
+                            .station(station)
+                            .sensor(sensor)
+                            .toHumanDate(formulaConverter ('strDate', 'ISO'))
+                            .Color()
+                            .nude(true);
+        chartW.loader("#WeekBarChar");
 
-        // var chartD = timeSeriesChart_curves()
-        //                     .width(24*4+50)
-        //                     .height(40)
-        //                     .dateParser("%Y-%m-%d %H:%M")
-        //                     .dateDomain([formatDate(Day_1), formatDate(new Date())])
-        //                     .station(station)
-        //                     .sensor(sensor)
-        //                     .toHumanDate(formulaConverter ('strDate', 'ISO'))
-        //                     .Color()
-        //                     .nude(true);
-        // chartD.loader("#TodayBarChar");
+        var chartD = timeSeriesChart_curves()
+                            .width(24*4+50)
+                            .height(40)
+                            .dateParser("%Y-%m-%d %H:%M")
+                            .dateDomain([formatDate(Day_1), formatDate(new Date())])
+                            .station(station)
+                            .sensor(sensor)
+                            .toHumanDate(formulaConverter ('strDate', 'ISO'))
+                            .Color()
+                            .nude(true);
+        chartD.loader("#TodayBarChar");
 
 
         var chartZoom = timeSeriesChart_curves()

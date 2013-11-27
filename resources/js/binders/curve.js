@@ -75,8 +75,6 @@ function timeSeriesChart_curves() {
         timeFormat = d3.time.format("%Y-%m-%dT%H:%M:%S"),
         dateParser = function(d) { return timeFormat.parse (d.date); },
         val = function(d) { return toHumanUnit(+d.val); },
-        valUp = function(d) { return toHumanUnit(+d.val); },
-        valDown = function(d) { return toHumanUnit(+d.val); },
         xPos=0,
         yPos=0,
         xScale = d3.time.scale().range([0, width]),
@@ -84,8 +82,6 @@ function timeSeriesChart_curves() {
         xAxis = d3.svg.axis().scale(xScale).orient("bottom").tickSize(4,6),
         yAxis = d3.svg.axis().scale(yScale).orient("left").ticks(4).tickSize(3,5),
         line = d3.svg.line().x(X).y(Y);
-        lineUp = d3.svg.line().x(X).y(YUp);
-        lineDown = d3.svg.line().x(X).y(YDown);
         // circle = d3.svg.circle().
 
     function chart(selection) {
@@ -100,11 +96,10 @@ function timeSeriesChart_curves() {
             data = rawdata.map(function(d, i) {
                 return {
                     date:dateParser.call(rawdata, d, i),
-                    val:val.call(rawdata, d, i),
-                    valUp:valUp.call(rawdata, d, i),
-                    valDown:valDown.call(rawdata, d, i)
+                    val:val.call(rawdata, d, i)
                 };
             });
+            console.log(data);
 
 
             // Update the x-scale.
@@ -135,12 +130,6 @@ function timeSeriesChart_curves() {
             gEnter.append("path")
                 .attr("class", "line")
                 .attr("stroke", darkColor);
-            gEnter.append("path")
-                .attr("class", "lineUp")
-                .attr("stroke", darkColor);
-            gEnter.append("path")
-                .attr("class", "lineDown")
-                .attr("stroke", darkColor);
 
             // Update the inner dimensions.
             var g = svg.select("g")
@@ -155,14 +144,6 @@ function timeSeriesChart_curves() {
                     // Update the line path.
                     this.select(".line")
                         .attr("d", line(data))
-                        .attr("clip-path", "url(#" + md5 + ")");
-                    // Update the line path.
-                    this.select(".lineUp")
-                        .attr("d", lineUp(data))
-                        .attr("clip-path", "url(#" + md5 + ")");
-                    // Update the line path.
-                    this.select(".lineDowv")
-                        .attr("d", lineDown(data))
                         .attr("clip-path", "url(#" + md5 + ")");
                     return this;
                 };
@@ -399,9 +380,7 @@ function timeSeriesChart_curves() {
                 data2add = data2add.map(function(d, i) {
                     return {
                         date:dateParser.call(data2add, d, i),
-                        val:val.call(data2add, d, i),
-                        valUp:valUp.call(data2add, d, i),
-                        valDown:valDown.call(data2add, d, i)
+                        val:val.call(data2add, d, i)
                     };
                 });
                 
@@ -445,14 +424,6 @@ function timeSeriesChart_curves() {
     // The x-accessor for the path generator; yScale ∘ Speed.
     function Y(d) {
         return yScale(+d.val);
-    }
-    // The x-accessor for the path generator; yScale ∘ Speed.
-    function YUp(d) {
-        return yScale(+d.valUp);
-    }
-    // The x-accessor for the path generator; yScale ∘ Speed.
-    function YDown(d) {
-        return yScale(+d.valDown);
     }
 
     function formatVal(v, decimal) {
@@ -526,10 +497,6 @@ function timeSeriesChart_curves() {
 
                 if (dataheader.sensor.SEN_FUNCTION.length>0)
                     eval(dataheader.sensor.SEN_FUNCTION );
-               //  console.log('val',val);
-               // console.log( 'valUp',valUp);
-               //  console.log('valDown',valDown );
-               //  console.log(toHumanUnit );
                 // chart.val(xx);
 
                 if (ready) {
@@ -610,18 +577,6 @@ function timeSeriesChart_curves() {
         console.log(_);
         if (!arguments.length) return val;
         val = _;
-        return chart;
-    };
-    chart.valUp = function(_) {
-        console.log(_);
-        if (!arguments.length) return valUp;
-        valUp = _;
-        return chart;
-    };
-    chart.valDown = function(_) {
-        console.log(_);
-        if (!arguments.length) return valDown;
-        valDown = _;
         return chart;
     };
     chart.ajaxUrl = function(_) {

@@ -128,11 +128,11 @@ moyenne par intervale de Ganularite, (ameliorer en moienne flotante)
     * @param $to is the end date of result needed
     * @param $Granularity
     */
-    function curve($since='2013-01-01T00:00', $to='2037-12-31T23:59', $Granularity=180) {
+    function curve($since='2013-01-01T00:00', $to='2037-12-31T23:59', $Granularity=180, $mode='AVG') {
         where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,func_get_args());
 
         $queryString = 
-        "SELECT FROM_UNIXTIME( TRUNCATE( UNIX_TIMESTAMP(`UTC`) / ".($Granularity*60).", 0)*".($Granularity*60)."+".($Granularity*60/2)." ) as UTC_grp , round(avg(value), 2) as `value`
+        "SELECT FROM_UNIXTIME( TRUNCATE( UNIX_TIMESTAMP(`UTC`) / ".($Granularity*60).", 0)*".($Granularity*60)."+".($Granularity*60/2)." ) as UTC_grp , round(".$mode."(value), 2) as `value`
             FROM  `".$this->SEN_TABLE."` 
             WHERE SEN_ID = ".$this->SEN_ID."
                 AND utc >= '$since'

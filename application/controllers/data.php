@@ -131,6 +131,7 @@ make and download tsv curve of a sensor
         where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,func_get_args());
 			// for real sensor, we read directly data in EAV table
 			$tsv = '';
+
 			if ($this->info['sensor']['SEN_ID']>0) {
 				$dataHeader = $this->dataReader->estimate ( $this->Since, $this->To, $this->XdisplaySizePxl/2 );
 				// where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,array($this->Station['_name'], $this->Since,	$this->To,	$this->XdisplaySizePxl, $dataHeader));
@@ -144,7 +145,6 @@ make and download tsv curve of a sensor
 					}
 
 					$this->dl_tsv ("date\tval\n".trim($tsv,"\n"));
-					$this->dl_tsv ($data);
 				}
 				else {
 					$this->dl_dataHeader($dataHeader);
@@ -156,14 +156,17 @@ make and download tsv curve of a sensor
 				$this->dataReader->load_sensor('TA:Arch:Temp:Out:Average');
 				$dataHeader = $this->dataReader->estimate ( $this->Since, $this->To, $this->XdisplaySizePxl/2 );
 				if (!$this->infos) {
-					// var_export($this->info);
+					// var_export($this->info['sensor']['SEN_DEPENDENCY_JSON']);
 					$sensor_lst = json_decode($this->info['sensor']['SEN_DEPENDENCY_JSON'], true);
 					$title="date";
 
 					foreach ($sensor_lst as $key => $sensor) {
+						// ne gere pas le decalage des dates.
+						// devrai etre deplace dans dao_data
 						$this->dataReader->load_sensor($sensor);
 						$title .= "\t".$key;
-						$data[$key] = $this->dataReader->curve ($this->Since, $this->To, $dataHeader['step'] );
+						$data[$key] = $this->dataReader->curve ($this->Since, $this->To, $dataHeader['step'] /* , $this->info['sensor']['SEN_GRP_MODE'] */);
+						ob_clean();
 					}
 
 					foreach ($data[$key] as $i => $value) {
@@ -173,9 +176,7 @@ make and download tsv curve of a sensor
 						}
 						$tsv .= "\n";
 					}
-
 					$this->dl_tsv ($title."\n".trim($tsv,"\n"));
-					$this->dl_tsv ($data);
 				}
 				else {
 					$this->dl_dataHeader($dataHeader);
@@ -206,7 +207,7 @@ make and download tsv sum value of a sensor
 			}
 
 			$this->dl_tsv ("date\tval\n".trim($tsv,"\n"));
-	        $this->dl_tsv ($data);
+	        // $this->dl_tsv ($data);
 		}
 		else $this->dl_dataHeader($dataHeader);
 	}
@@ -337,7 +338,6 @@ Download after convert data structure to json object
 	*/
 	private function dl_json ($data) {
 		$json = json_encode(array_merge($this->info, array('data' => $data)), JSON_NUMERIC_CHECK);
-		// ob_clean();
 		@ob_end_clean();
 		header_remove();
 		force_download('data.json', $json);
@@ -350,7 +350,6 @@ Download after convert data structure to json object
 	*/
 	private function dl_dataHeader ($dataHeader) {
 		$json = json_encode(array_merge($this->info, $dataHeader), JSON_NUMERIC_CHECK);
-		// ob_clean();
 		@ob_end_clean();
 		header_remove();
 		force_download('data.json', $json);
@@ -361,7 +360,7 @@ Download tsv file
 	* @
 	* @param data structure array()
 	*/
-	private function dl_tsv ($data) {exit();
+	private function dl_tsv ($data) {
 		// ob_clean();
 		@ob_end_clean();
 		header_remove();

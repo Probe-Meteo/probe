@@ -13,8 +13,7 @@ function probeViewer(){
                     .selectAll('tr + tr')
                     .data( json.data.filter(
                         function(element, index, array) {
-                            return (element.SEN_DISPLAY_LEVEL & 1 == 1);
-                            // return (element.SEN_DISPLAY_LEVEL == 1);
+                            return (element.SEN_DISPLAY_LEVEL & 1);
                         }) )
                     .enter()
                         .append('tr')
@@ -182,33 +181,31 @@ function probeViewer(){
                 lst.each(function(d,i) {
                     // on definie notre objet au plus pres de notre besoin.
                     window.setTimeout(function (){
-                            var linkMode;
-                            switch (d.SEN_MAGNITUDE) {
-                                case "Rain":
-                                case "Evapotranspiration":
-                                    d3.select('#'+str2id(d.SEN_NAME))
-                                        .attr('onclick',function(d) { return "javascript:location.href='/viewer/barChart/"+station+'/'+(d.SEN_NAME)+"'; return false;";})
-                                    cumulMode(d,1);
-                                    break;
-                                case "WindSpeed":
-                                    d3.select('#'+str2id(d.SEN_NAME))
-                                        .attr('onclick',function(d) { return "javascript:location.href='/viewer/wind/"+station+"'; return false;";})
-                                    curveMode(d,2);
-                                    break;
-                                case "angle":
-                                    d3.select('#'+str2id(d.SEN_NAME))
-                                        .attr('onclick',function(d) { return "javascript:location.href='/viewer/wind/"+station+"'; return false;";})
-                                    histoWindMode(d,2);
-                                    break;
-                                default:
-                                    d3.select('#'+str2id(d.SEN_NAME))
-                                        .attr('onclick',function(d) { return "javascript:location.href='/viewer/curves/"+station+'/'+(d.SEN_NAME)+"'; return false;";})
-                                    curveMode(d,4);
-                            }
-
+                        var linkMode;
+                        switch (d.SEN_DEF_PLOT) {
+                        // switch (d.SEN_MAGNITUDE) {
+                            case "barChart":
+                                d3.select('#'+str2id(d.SEN_NAME))
+                                    .attr('onclick',function(d) { return "javascript:location.href='/viewer/barChart/"+station+'/'+(d.SEN_NAME)+"'; return false;";})
+                                cumulMode(d,1);
+                                break;
+                            case "wind":
+                                d3.select('#'+str2id(d.SEN_NAME))
+                                    .attr('onclick',function(d) { return "javascript:location.href='/viewer/wind/"+station+"'; return false;";})
+                                histoWindMode(d,2);
+                                break;
+                            case "curves":
+                                d3.select('#'+str2id(d.SEN_NAME))
+                                    .attr('onclick',function(d) { return "javascript:location.href='/viewer/curves/"+station+"'; return false;";})
+                                curvesMode(d,3);
+                                break;
+                            default:
+                                d3.select('#'+str2id(d.SEN_NAME))
+                                    .attr('onclick',function(d) { return "javascript:location.href='/viewer/curve/"+station+'/'+(d.SEN_NAME)+"'; return false;";})
+                                curveMode(d,4);
                         }
-                        , (i-1)*1000);
-
+                    }
+                    , (i-1)*1000);
                 })
             }
             );
