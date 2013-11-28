@@ -137,10 +137,10 @@ function timeSeriesChart_curves() {
                 .attr("stroke", darkColor);
             gEnter.append("path")
                 .attr("class", "lineUp")
-                .attr("stroke", darkColor);
+                .attr("stroke", lightColor);
             gEnter.append("path")
                 .attr("class", "lineDown")
-                .attr("stroke", darkColor);
+                .attr("stroke", lightColor);
 
             // Update the inner dimensions.
             var g = svg.select("g")
@@ -161,7 +161,7 @@ function timeSeriesChart_curves() {
                         .attr("d", lineUp(data))
                         .attr("clip-path", "url(#" + md5 + ")");
                     // Update the line path.
-                    this.select(".lineDowv")
+                    this.select(".lineDown")
                         .attr("d", lineDown(data))
                         .attr("clip-path", "url(#" + md5 + ")");
                     return this;
@@ -404,7 +404,8 @@ function timeSeriesChart_curves() {
                         valDown:valDown.call(data2add, d, i)
                     };
                 });
-                
+                console.log(data2add );
+
                 data = data.filter(function(element, index, array){
                           return (element.date<data2add[0].date || element.date>data2add[data2add.length-1].date);
                       })

@@ -117,7 +117,14 @@ this functione estimate the recommanded granularity between 2 date for retunr 10
         // $GranularityForNbrValue = round((strtotime($last)-strtotime($first)) / $count * ($count/$nbr) / 60 , 1);
         $GranularityForNbrValue = (strtotime($last)-strtotime($first)) / $count * ($count/$nbr) / 60;
 
-        return array ('step'=>$GranularityForNbrValue<5 ? 5 : $GranularityForNbrValue, 'lastValue'=>$lastValue, 'first'=>$first, 'last'=>$last, 'count'=>$count, 'min'=>$min, 'max'=>$max, 'avg'=>$avg, 'sum'=>$sum);
+        $closest = null;
+        $stepmask = array(5,10,15,30,45,60,90,120,180,240,360,720,1440,2880,4320,10080,20160,432000);
+        foreach($stepmask as $item) {
+            if($closest == null || abs($GranularityForNbrValue - $closest) > abs($item - $GranularityForNbrValue)) {
+                $closest = $item;
+            }
+        }
+        return array ('step'=>$closest, 'lastValue'=>$lastValue, 'first'=>$first, 'last'=>$last, 'count'=>$count, 'min'=>$min, 'max'=>$max, 'avg'=>$avg, 'sum'=>$sum);
     }
 
 
