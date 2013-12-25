@@ -247,29 +247,20 @@ function timeSeriesChart_curves() {
                     .attr('height', height - margin.top - margin.bottom);
 
                 var Y_val=0, timeoutID=null;
-                Sensitive.on("mousemove", function() {
-                // http://bl.ocks.org/mbostock/3025699
-                    // var d = offsets[Math.round((xScale.invert(d3.mouse(this)[0]) - startDate) / step)];
-                    // focus.select("circle").attr("transform", "translate(" + xScale(d[0]) + "," + yScale(d[1]) + ")");
+                                Sensitive.on("mousemove", function() {
+                    // http://bl.ocks.org/mbostock/3902569
+                    var bisectDate = d3.bisector(function(d) { return d.date; }).left;
+                    var x0 = xScale.invert(d3.mouse(this)[0]),
+                        i = bisectDate(data, x0, 1),
+                        d0 = data[i - 1],
+                        d1 = data[i],
+                        d = x0 - d0.date > d1.date - x0 ? d1 : d0;
 
-                        var X_px = d3.mouse(this)[0],
-                            X_date = xScale.invert(X_px);
+                        Y_val = d.val;
+                        X_date = d.date;
+                        X_px=Math.round(xScale(X_date));
+                        Y_px=Math.round(yScale(Y_val));
 
-                        Y_px = yScale(Y_val);
-                        var iSpot;
-                        data.forEach(function(element, index, array) {
-                            if ((index+1 < array.length) && (array[index].date <= X_date) && (array[index+1].date >= X_date)) {
-                                if (X_date-array[index].date < array[index+1].date-X_date) {
-                                    iSpot=index;
-                                } else {
-                                    iSpot=index+1;
-                                }
-                                Y_val = array[iSpot].val;
-                                X_date = array[iSpot].date;
-                                X_px=Math.round(xScale(X_date));
-                                Y_px=Math.round(yScale(Y_val));
-                            }
-                        });
                         spot.attr("opacity", 1)
                             .attr("transform", "translate("+X_px+","+Y_px+")");
 
@@ -289,6 +280,7 @@ function timeSeriesChart_curves() {
                     });
 
                 Sensitive.call(zm=d3.behavior.zoom().x(xScale).scaleExtent([1,1000]).on("zoom", function(){
+                    spot.attr("opacity", 0);
                     window.clearTimeout(timeoutID);
                     timeoutID = window.setTimeout(function(){zoom(g)}, 400);
                     // Update the line path.
