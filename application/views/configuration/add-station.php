@@ -46,6 +46,7 @@
                                 <input id="dbms-<?=$input?>-<?=$value?>"
                                      type="radio"
                                     name="dbms-<?=$input?>" value="<?=$value?>"
+                                <?= $value=='sqlite'? 'disabled':'checked'; ?>
                                 >
                                 <?=sprintf('%s <span class="hidden">(%s)</span>',
                                     i18n(sprintf('configuration-dbms.%s:%s.label', $input, $value), true),
