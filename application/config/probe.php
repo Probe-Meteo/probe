@@ -15,7 +15,6 @@ $config['probe:locale'] = 'fr';
 // Label that will appear after page title (e.g.: installation - Probe.com)
 $config['page.title:suffix.metadata'] = 'Probe';
 
-
 /*
 *redirection URLs for the admin area
 */

@@ -2,11 +2,12 @@
 
 // require_once APPPATH."/controllers/checkSetup.php";
 
-class Configuration extends CI_Controller {
+class configuration extends CI_Controller
+{
     /**
      * @var array data for the breadcrumbs related to installation
      */
-    protected  $_breadcrumb = array(
+    protected $_breadcrumb = array(
         'dashboard' => array(// in case list-station isn't the home anymore
             array(
                 'status' => 'active',
@@ -44,16 +45,18 @@ class Configuration extends CI_Controller {
     );
 
 
-	public function __construct() {
-		parent::__construct();
-		$this->load->helper('url');
+    public function __construct()
+    {
+        parent::__construct();
+        $this->load->helper('url');
         $this->load->library('page_manager');
 
-		$this->i18n->setLocaleEnv($this->config->item('probe:locale'), 'global');
-	}
+        $this->i18n->setLocaleEnv($this->config->item('probe:locale'), 'global');
+    }
 
-	public function index() {
-		$this->load->model('station');
+    public function index()
+    {
+        $this->load->model('station');
 
         $page = new Page_manager();
         $page->addData('breadcrumb', $this->_breadcrumb['dashboard'] );
@@ -61,9 +64,10 @@ class Configuration extends CI_Controller {
 
         // display the view
         $page->view('configuration/dashboard');
-	}
+    }
 
-	public function listStations() {
+    public function listStations()
+    {
         $this->load->model('station');
         $page = new Page_manager();
 
@@ -75,32 +79,34 @@ class Configuration extends CI_Controller {
         $page->addMetadata('configuration-list-station'); // fetch information to build the HTML header
 
         // display the view
-		$page->view('configuration/list-stations');
-	}
+        $page->view('configuration/list-stations');
+    }
 
 
-	public function addStation() {
+    public function addStation()
+    {
         $this->load->library('form_validation');
         $page = new Page_manager();
 
-        // build view data
+        // build data
         $page->addData('breadcrumb', $this->_breadcrumb['add-station'] );
         $page->addData('dbmsUsername', null );
         $page->addData('dbmsPassword', null );
         $page->addData('dbmsHost', null );
         $page->addData('dbmsPort', 3306 );
         $page->addData('dbmsDatabaseName', null );
+        // fetch view elements
         $page->addData('form', $this->config->item('add-station.form.structure') );
         $page->addMetadata('configuration-add-station'); // fetch information to build the HTML header
 
         // display the view
-		$page->view('configuration/add-station');
-	}
-	public function removeStation() {
-
-	}
-	public function updateStation() {
-
-	}
+        $page->view('configuration/add-station');
+    }
+    public function removeStation()
+    {
+    }
+    public function updateStation()
+    {
+    }
 
 }
