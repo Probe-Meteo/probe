@@ -10,7 +10,6 @@ class dao_data extends CI_Model {
     protected $STEP = array('HOUR'=>'HOUR', 'DAY'=>'DAY', 'WEEK'=>'WEEK', 'MONTH'=>'MONTH');
     function __construct($station, $sensor) {
         parent::__construct();
-        where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,func_get_args());
         where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__);
         $this->dataDB = $this->load->database($station, TRUE);
         $this->SEN_LST = $this->sensor_list();

@@ -127,8 +127,7 @@ class Station extends CI_Model {
 		}
 		// on decode le password.
 		$confs[$item]['password'] = safe_b64decode($confs[$item]['password']);
-
-		where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,array('3shGJYzKKT', safe_b64encode('3shGJYzKKT')));
+		// where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,array('3shGJYzKKT', safe_b64encode('3shGJYzKKT')));
 		
 		return $confs;
 	}

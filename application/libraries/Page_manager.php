@@ -46,7 +46,7 @@ class Page_manager {
      */
     public function view($page)
     {
-        where_I_Am(__FILE__, __CLASS__, __FUNCTION__, __LINE__, func_get_args());
+        where_I_Am(__FILE__, __CLASS__, __FUNCTION__, __LINE__);
 
         $view = 'application/views/'.$page.'.php';
         if ( ! file_exists($view)) {
@@ -69,7 +69,6 @@ class Page_manager {
 
         $this->_CI->load->view('templates/header', $this->data);
         $this->_CI->load->view('templates/breadcrumb', $this->data);
-        where_I_Am(__FILE__, __CLASS__, __FUNCTION__, __LINE__, array($page, $this->data));
         $this->_CI->load->view($page, $this->data);
         $this->_CI->load->view('templates/js-libs', $this->data);
         $this->_CI->load->view('templates/footer', $this->data);
