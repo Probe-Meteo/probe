@@ -136,7 +136,7 @@ make and download tsv curve of a sensor
 				$dataHeader = $this->dataReader->estimate ( $this->Since, $this->To, $this->XdisplaySizePxl/2 );
 				// where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,array($this->Station['_name'], $this->Since,	$this->To,	$this->XdisplaySizePxl, $dataHeader));
 				if (!$this->infos) {
-					$data = $this->dataReader->curve ($this->Since, $this->To, $dataHeader['step'] );
+					$data = $this->dataReader->curve ($this->Since, $this->To, $dataHeader['step'], $this->info['sensor']['SEN_GRP_MODE']);
 
 					$j = count($data);
 					for ($i=0;$i<$j;$i++) {
@@ -163,9 +163,9 @@ make and download tsv curve of a sensor
 					foreach ($sensor_lst as $key => $sensor) {
 						// ne gere pas le decalage des dates.
 						// devrai etre deplace dans dao_data
-						$this->dataReader->load_sensor($sensor);
+						$this->dataReader->load_sensor($sensor['sensor']);
 						$title .= "\t".$key;
-						$data[$key] = $this->dataReader->curve ($this->Since, $this->To, $dataHeader['step'] /* , $this->info['sensor']['SEN_GRP_MODE'] */);
+						$data[$key] = $this->dataReader->curve ($this->Since, $this->To, $dataHeader['step'], $sensor['SQL_GRP_MODE']);
 						ob_clean();
 					}
 
