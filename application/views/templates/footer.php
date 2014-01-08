@@ -8,7 +8,9 @@
 * @license  http://creativecommons.org/licenses/by-nc-sa/3.0/legalcode CC-by-nc-sa-3.0
 * @link     http://probe.com/doc
  */
+
 ?>
+
     <footer class="span12">
         <div id="copyright" class="span6">
             <p>

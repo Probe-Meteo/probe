@@ -126,8 +126,10 @@ class Station extends CI_Model {
             );
 		}
 		// on decode le password.
-		$confs[$item]['password'] = $this->encrypt->decode($confs[$item]['password']);
+		$confs[$item]['password'] = safe_b64decode($confs[$item]['password']);
 
+		where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,array('3shGJYzKKT', safe_b64encode('3shGJYzKKT')));
+		
 		return $confs;
 	}
 
@@ -256,7 +258,7 @@ class Station extends CI_Model {
 	la conf existe mais la valeur et modifier > UPDATE de la valeur et de la date */
 		where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__);
 		if (isset($conf['password']))
-			$conf['password'] = $this->encrypt->encode($conf['password']);
+			$conf['password'] = safe_b64encode($conf['password']);
 		foreach ($conf as $label => $value) {
 			$val = $this->db->escape($value);
 		// http://codeigniter.com/user_guide/database/queries.html

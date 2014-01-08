@@ -150,7 +150,7 @@
 <script src="/resources/js/libs/d3.v3.js"></script>
 <script src="/resources/js/ProbeTools.js"></script>
 <script src="/resources/js/libs/base64.js"></script>
-<script src="/resources/js/binders/curves.js"></script>
+<script src="/resources/js/binders/curve.js"></script>
 <script src="/resources/js/binders/barChart.js"></script>
 <script src="/resources/js/binders/histoWind.js"></script>
 <script src="/resources/js/libs/suncalc.js"></script>
