@@ -44,6 +44,10 @@ function safe_b64decode($string) {
 
 
 
+function mergeKeyValue(&$item1, $key, $next)
+{
+    $item1 = "$key\t$item1";
+}
 
 
 

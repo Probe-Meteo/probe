@@ -32,20 +32,23 @@
 
 <style>
     svg {
-        font-size: 10px;
+        font-size: 0.85em;
     }
     text {
-        text-shadow: 0 1px 1px #FFF, 1px 0 1px #FFF, 0 -1px 1px #FFF, -1px 0 1px #FFF,
+        text-shadow: 0 0.6px 1px #FFF, 0.6px 0 1px #FFF, 0 -0.6px 1px #FFF, -0.6px 0 1px #FFF,
+            0.6px 0.6px 1px #FFF, 0.6px -0.6px 1px #FFF, -0.6px -0.6px 1px #FFF, -0.6px 0.6px 1px #FFF,
+            0 1.5px 1px #FFF, 1.5px 0 1px #FFF, 0 -1.5px 1px #FFF, -1.5px 0 1px #FFF,
+            0 1px 1px #FFF, 1px 0 1px #FFF, 0 -1px 1px #FFF, -1px 0 1px #FFF,
             1px 1px 1px #FFF, 1px -1px 1px #FFF, -1px -1px 1px #FFF, -1px 1px 1px #FFF,
             0 2px 1px #FFF, 2px 0 1px #FFF, 0 -2px 1px #FFF, -2px 0 1px #FFF;
     }
+/*    #spot:hover + .spotdetail {
+        opacity: 1;
+    }*/
     .spot {
         fill: none;
         stroke-width: 1px;
     }
-/*    #spot:hover+#spotdetail {
-        opacity: 1;
-    }*/
     .Dot {
         fill: none;
         stroke-width: 1px;
@@ -53,7 +56,7 @@
     .spotCircle {
         fill: none;
         stroke-opacity: .3;
-        stroke-width: 6px;
+        stroke-width: 7px;
     }
     .interLine {
         fill: none;
@@ -66,15 +69,14 @@
         text-anchor:middle;
     }
     .legend .legend_min, .legend .legend_avg, .legend .legend_max { 
-        font-size: 8px;
+        font-size: 0.75em;
     }
     .spotdetail {
         /*opacity: 0;*/
-        /*display: none;*/
     }
     .spotdetail text {
         fill:#000;
-        font-size: 9px;
+        font-size: 0.8em;
     }
     .sensitive {
         opacity: 0;

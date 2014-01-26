@@ -136,13 +136,10 @@ make and download tsv curve of a sensor
 				$dataHeader = $this->dataReader->estimate ( $this->Since, $this->To, $this->XdisplaySizePxl/2 );
 				// where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,array($this->Station['_name'], $this->Since,	$this->To,	$this->XdisplaySizePxl, $dataHeader));
 				if (!$this->infos) {
-					$data = $this->dataReader->curve ($this->Since, $this->To, $dataHeader['step'], $this->info['sensor']['SEN_GRP_MODE']);
 
-					$j = count($data);
-					for ($i=0;$i<$j;$i++) {
-						$tsv .= substr(	$data[$i]['UTC_grp'],0,-3)."\t".
-										$data[$i]['value']."\n";
-					}
+					$arrayStrRaw = $this->curveRaw( $this->sensor, $dataHeader['step'], $this->info['sensor']['SEN_GRP_MODE'] );
+					array_walk(	$arrayStrRaw, 'mergeKeyValue' , '');
+					$tsv = implode( "\n", $arrayStrRaw );
 
 					$this->dl_tsv ("date\tval\n".trim($tsv,"\n"));
 				}
@@ -182,6 +179,26 @@ make and download tsv curve of a sensor
 					$this->dl_dataHeader($dataHeader);
 				}
 			}
+	}
+/**
+make and download tsv curve of a sensor
+	* @
+	* @param since is the start date of result needed
+	* @param lenght is the number of day
+	* @param is the sensor name (one or more)
+	*/
+	function curveRaw($sensor, $step, $grpMode) {
+        where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,func_get_args());
+		// for real sensor, we read directly data in EAV table
+		$this->dataReader->load_sensor($sensor);
+
+		$data = $this->dataReader->curve ($this->Since, $this->To, $step, $this->info['sensor']['SEN_GRP_MODE']);
+
+		foreach ($data as $value) {
+			$Raw[substr($value['UTC_grp'],0,-3)] = $value['value'];
+//			$Raw[$value['UTC_grp']] = $value['value'];
+		}
+		return $Raw;
 	}
 
 /**
