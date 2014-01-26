@@ -34,13 +34,18 @@
     svg {
         font-size: 10px;
     }
-    #spot {
-        
+    text {
+        text-shadow: 0 1px 1px #FFF, 1px 0 1px #FFF, 0 -1px 1px #FFF, -1px 0 1px #FFF,
+            1px 1px 1px #FFF, 1px -1px 1px #FFF, -1px -1px 1px #FFF, -1px 1px 1px #FFF,
+            0 2px 1px #FFF, 2px 0 1px #FFF, 0 -2px 1px #FFF, -2px 0 1px #FFF;
     }
     .spot {
         fill: none;
         stroke-width: 1px;
     }
+/*    #spot:hover+#spotdetail {
+        opacity: 1;
+    }*/
     .Dot {
         fill: none;
         stroke-width: 1px;
@@ -50,15 +55,9 @@
         stroke-opacity: .3;
         stroke-width: 6px;
     }
-    .legend text {
-        /*fill: #1F77B4;*/
-        /*fill-width: 5px;*/
-        /*font-weight:bold;*/
-        /*fill-opacity: .2;*/
-        /*stroke: #fff;*/
-        /*stroke-width: .5px;*/
-        /*stroke-position:2;*/
-        /*stroke-opacity: .8;*/
+    .interLine {
+        fill: none;
+        stroke-width: 1px;        
     }
     .legend .val, .legend .date {
         text-anchor:end;
@@ -69,7 +68,14 @@
     .legend .legend_min, .legend .legend_avg, .legend .legend_max { 
         font-size: 8px;
     }
-
+    .spotdetail {
+        /*opacity: 0;*/
+        /*display: none;*/
+    }
+    .spotdetail text {
+        fill:#000;
+        font-size: 9px;
+    }
     .sensitive {
         opacity: 0;
     }
@@ -101,17 +107,17 @@
         Day_365.setDate(Day_365.getDate() -365);
 
         // on definie notre objet au plus pres de notre besoin.
-        // var chartY = timeSeriesChart_curves()
-        //                     .width(52*4+50)
-        //                     .height(40)
-        //                     .dateParser("%Y-%m-%d %H:%M")
-        //                     .dateDomain([formatDate(Day_365), formatDate(new Date())])
-        //                     .station(station)
-        //                     .sensor(sensor)
-        //                     .toHumanDate(formulaConverter ('strDate', 'ISO'))
-        //                     .Color()
-        //                     .nude(true);
-        // chartY.loader("#YearBarChar");
+        var chartY = timeSeriesChart_curves()
+                            .width(52*4+50)
+                            .height(40)
+                            .dateParser("%Y-%m-%d %H:%M")
+                            .dateDomain([formatDate(Day_365), formatDate(new Date())])
+                            .station(station)
+                            .sensor(sensor)
+                            .toHumanDate(formulaConverter ('strDate', 'ISO'))
+                            .Color()
+                            .nude(true);
+        chartY.loader("#YearBarChar");
 
         // var chartM = timeSeriesChart_curves()
         //                     .width(30*4+50)
