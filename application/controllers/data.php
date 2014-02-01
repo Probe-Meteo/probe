@@ -158,12 +158,26 @@ make and download tsv curve of a sensor
 					$title="date";
 
 					foreach ($sensor_lst as $key => $sensor) {
-						// ne gere pas le decalage des dates.
-						// devrai etre deplace dans dao_data
-						$this->dataReader->load_sensor($sensor['sensor']);
-						$title .= "\t".$key;
-						$data[$key] = $this->dataReader->curve ($this->Since, $this->To, $dataHeader['step'], $sensor['SQL_GRP_MODE']);
-						ob_clean();
+						if ($sensor['sensor']!='TIME_AUTO') {
+							// ne gere pas le decalage des dates.
+							// devrai etre deplace dans dao_data
+							$this->dataReader->load_sensor($sensor['sensor']);
+							$title .= "\t".$key;
+							$data[$key] = $this->dataReader->curve ($this->Since, $this->To, $dataHeader['step'], $sensor['SQL_GRP_MODE']);
+							ob_clean();
+						} else {
+							$GranularityForNbrValue = (strtotime($this->To) - strtotime($this->Since)) / ($this->XdisplaySizePxl/2);
+					        $closest = null;
+					        $stepmask = array(1,5,10,15,30,45,60,90,120,180,240,360,720,1440,2880,4320,10080,20160,432000);
+					        foreach($stepmask as $item) {
+					            if($closest == null || abs($GranularityForNbrValue - $closest) > abs($item - $GranularityForNbrValue)) {
+					                $closest = $item;
+					            }
+					        }
+					        for($i=strtotime($this->Since); $i<strtotime($this->To); $i+=$closest)
+					        	$tsv .= date('Y-m-d H:i',$i)."\n";
+					        $this->dl_tsv ('date'."\n".trim($tsv,"\n"));
+						}
 					}
 
 					foreach ($data[$key] as $i => $value) {
