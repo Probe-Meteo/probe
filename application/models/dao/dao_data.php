@@ -39,7 +39,7 @@ return list of sensor for current station
     */
     function index() {
         where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,func_get_args());
-        $query = "SELECT * FROM `TR_SENSOR` LIMIT 0 , 1000";
+        $query = "SELECT * FROM `TR_SENSOR` ORDER BY SEN_SORT LIMIT 0 , 1000";
         $query_result = $this->dataDB->query($query);
         $brut = $query_result->result_array($query_result);
         // $reformated = null;

@@ -138,7 +138,7 @@
             .tg-table-light td { height:46px; padding: 5px;}
             .tg-table-light th {padding: 10px;}
 			.tg-table-light td, .tg-table-light th { background-color: #fff; border-bottom: 1px #bbb solid; color: #333; font-family: sans-serif; font-size: 100%; vertical-align: top; }
-			.tg-table-light .Day, .tg-table-light .Week, .tg-table-light .Month { width: 120px; }
+			.tg-table-light .Day, .tg-table-light .Week, .tg-table-light .Month { width: 155px; }
 			.tg-table-light .tg-even td  { background-color: #eee; }
 			.tg-table-light th  { background-color: #ddd; color: #333; font-size: 110%; font-weight: bold; }
 			.tg-table-light tr:hover td, .tg-table-light tr.even:hover td  { color: #222; background-color: #FCFBE3; }

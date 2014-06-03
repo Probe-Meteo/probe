@@ -222,9 +222,9 @@ function probeViewer(){
                             case "curves":
                                 linker = row.selectAll('td > a')
                                     .attr('href', "/viewer/curves/"+station+'/'+(d.SEN_NAME));
-                                curveMode(d, 4, 1);
+                                curveMode(d, 3, 1);
                                 row.on('mouseover',function(d) {
-                                    curveMode(d, 4, 30);
+                                    curveMode(d, 3, 30);
                                     // $('#circular3dG').clone().appendTo('#'+id+'_Month').attr('id', id+'_load');
                                     row.on('mouseover',null);
                                 });
