@@ -99,7 +99,7 @@ function timeSeriesChart_curves() {
                     val:val.call(rawdata, d, i)
                 };
             });
-            console.log(data);
+            //console.log(data);
 
 
             // Update the x-scale.

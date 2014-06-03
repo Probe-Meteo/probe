@@ -11,6 +11,20 @@
 // $station="VP2_GTD";
 ?>
 <style>
+.main_loader{
+    position:relative;
+    width:48px;
+    height:48px;
+}
+</style>
+
+
+<div style='display:none'>
+    <div id="main_loader" class='main_loader'>
+    </div>
+</div>
+
+<style>
     /* Bootstrap style */
     .row-fluid > .sidebar-nav {
         position: relative;
@@ -121,8 +135,10 @@
         <div id="middleChartsArea" class="content fixed-fixed">
 			<style type="text/css">
 			.tg-table-light { border-collapse: collapse; border-spacing: 0;  border: 1.5px #bbb solid;}
-			.tg-table-light td, .tg-table-light th { background-color: #fff; border-bottom: 1px #bbb solid; color: #333; font-family: sans-serif; font-size: 100%; padding: 10px; vertical-align: top; }
-			.tg-table-light .Day, .tg-table-light .Week, .tg-table-light .Month { width: 120px}
+            .tg-table-light td { height:46px; padding: 5px;}
+            .tg-table-light th {padding: 10px;}
+			.tg-table-light td, .tg-table-light th { background-color: #fff; border-bottom: 1px #bbb solid; color: #333; font-family: sans-serif; font-size: 100%; vertical-align: top; }
+			.tg-table-light .Day, .tg-table-light .Week, .tg-table-light .Month { width: 120px; }
 			.tg-table-light .tg-even td  { background-color: #eee; }
 			.tg-table-light th  { background-color: #ddd; color: #333; font-size: 110%; font-weight: bold; }
 			.tg-table-light tr:hover td, .tg-table-light tr.even:hover td  { color: #222; background-color: #FCFBE3; }

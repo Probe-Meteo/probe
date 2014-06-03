@@ -131,14 +131,14 @@ function timeSeriesChart_curves() {
                     .append("g");
 
             gEnter.append("path")
-                .attr("class", "line")
-                .attr("stroke", darkColor);
-            gEnter.append("path")
                 .attr("class", "lineUp")
                 .attr("stroke", lightColor);
             gEnter.append("path")
                 .attr("class", "lineDown")
                 .attr("stroke", lightColor);
+            gEnter.append("path")
+                .attr("class", "line")
+                .attr("stroke", darkColor);
 
             // Update the inner dimensions.
             var g = svg.select("g")
@@ -158,7 +158,6 @@ function timeSeriesChart_curves() {
                         .attr("d", line(data))
                         .attr("clip-path", "url(#" + md5 + ")");
                     if (!nude){
-                        console.log('wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww')
                         // Update the line path.
                         this.select(".lineUp")
                             .attr("d", lineUp(data))
@@ -266,7 +265,7 @@ function timeSeriesChart_curves() {
                     var legendmax = legend.append('text')
                         .attr("x", 5);
                     var legendavg = legend.append('text')
-                        .attr("x", 2);
+                        .attr("x", 0);
                     var legendmin = legend.append('text')
                         .attr("x", 5);
 
@@ -300,10 +299,10 @@ function timeSeriesChart_curves() {
                             .attr("y", 0)
                             .text('↑    '+formatVal(d.valUp, 1));
                         legendavg
-                            .attr("y", Y_px-Y_Up+2)
+                            .attr("y", Y_px-Y_Up+0)
                             .text('↔  '+formatVal(d.val, 1));
                         legendmin
-                            .attr("y", Y_Down-Y_Up+6)
+                            .attr("y", Y_Down-Y_Up+0)
                             .text('↓    '+formatVal(d.valDown, 1));
 
                         spot.attr("opacity", 1)
