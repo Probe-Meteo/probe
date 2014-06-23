@@ -18,11 +18,9 @@
  * )
  */
 ?>
-<div class="navbar navbar-fixed-top">
-    <div class="navbar-inner">
-        <div class="container">
+<div class="navbar navbar-inverse navbar-fixed-top">
             <?php if (isset($breadcrumb)): ?>
-    <ul class="nav breadcrumb">
+    <ul class="breadcrumb">
     <?php foreach ($breadcrumb as $key => $step): ?>
         <?php if (is_array($step)): ?>
         <li class="<?=isset($step['status']) ? $step['status'] : 'disabled';?>">
@@ -38,21 +36,15 @@
     </ul>
     <?php endif ?>
 
-    <ul id="access-profile" class="breadcrumb nav pull-right">
-        <li class="divider-vertical"></li>
-        <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                <?=i18n('profile.request:settings.label')?> <b class="caret"></b>
-            </a>
-            <ul class="dropdown-menu">
+    <ul id="access-profile" class="breadcrumb">
                 <li>
                     <a href="/profile/me"><?=i18n('profile.request.label')?></a>
+            <span class="divider">|</span>
                 </li>
                 <li>
                     <a href="/profile/settings"><?=i18n('profile.request:settings.label')?></a>
+            <span class="divider">|</span>
                 </li>
-                <li class="divider"></li>
-<!--                <li class="nav-header">Nav header</li-->
                 <li>
                     <?php if ($isAuthentified):?>
                         <a href="/logout"><?=i18n('logout.request.label')?></a>
@@ -63,7 +55,4 @@
             </ul>
         </li>
     </ul>
-</div>
-
-    </div>
 </div>

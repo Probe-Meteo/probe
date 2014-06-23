@@ -1,4 +1,4 @@
-<?
+<?php
 /* 
 * This file contains the dynamic i18n key logged with i18n( $string , true );
 * dynamic keys can't correctly retrieved by gettext as they exists only at run time

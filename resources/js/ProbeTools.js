@@ -146,7 +146,7 @@ function formulaConverter (grandeur, outputUnit)
             'in/h':    { name: 'inch per hour',                     symbol: 'in/h',     formula: function(SI){if (!arguments.length) return 'in/h'; return SI/25.4;}},    // ok
             'in/min':  { name: 'inch per minut',                    symbol: 'in/min',   formula: function(SI){if (!arguments.length) return 'in/min'; return SI/25.4/60;}}, // ok
         },
-        Humidity:{
+        Percent:{
             '%':   { name: 'amount of water vapor',         symbol: '%',		formula: function(SI){if (!arguments.length) return '%'; return +SI;}},	// ok
         },
         Pressure:{

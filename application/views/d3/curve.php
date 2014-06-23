@@ -32,19 +32,11 @@
 
 <style>
     svg {
-        font-size: 0.85em;
+        font-size: 10px;
     }
-    text {
-        text-shadow: 0 0.6px 1px #FFF, 0.6px 0 1px #FFF, 0 -0.6px 1px #FFF, -0.6px 0 1px #FFF,
-            0.6px 0.6px 1px #FFF, 0.6px -0.6px 1px #FFF, -0.6px -0.6px 1px #FFF, -0.6px 0.6px 1px #FFF,
-            0 1.5px 1px #FFF, 1.5px 0 1px #FFF, 0 -1.5px 1px #FFF, -1.5px 0 1px #FFF,
-            0 1px 1px #FFF, 1px 0 1px #FFF, 0 -1px 1px #FFF, -1px 0 1px #FFF,
-            1px 1px 1px #FFF, 1px -1px 1px #FFF, -1px -1px 1px #FFF, -1px 1px 1px #FFF,
-            0 2px 1px #FFF, 2px 0 1px #FFF, 0 -2px 1px #FFF, -2px 0 1px #FFF;
+    #spot {
+        
     }
-/*    #spot:hover + .spotdetail {
-        opacity: 1;
-    }*/
     .spot {
         fill: none;
         stroke-width: 1px;
@@ -56,11 +48,17 @@
     .spotCircle {
         fill: none;
         stroke-opacity: .3;
-        stroke-width: 7px;
+        stroke-width: 6px;
     }
-    .interLine {
-        fill: none;
-        stroke-width: 1px;        
+    .legend text {
+        /*fill: #1F77B4;*/
+        /*fill-width: 5px;*/
+        /*font-weight:bold;*/
+        /*fill-opacity: .2;*/
+        /*stroke: #fff;*/
+        /*stroke-width: .5px;*/
+        /*stroke-position:2;*/
+        /*stroke-opacity: .8;*/
     }
     .legend .val, .legend .date {
         text-anchor:end;
@@ -69,19 +67,13 @@
         text-anchor:middle;
     }
     .legend .legend_min, .legend .legend_avg, .legend .legend_max { 
-        font-size: 0.75em;
+        font-size: 8px;
     }
-    .spotdetail {
-        /*opacity: 0;*/
-    }
-    .spotdetail text {
-        fill:#000;
-        font-size: 0.8em;
-    }
+
     .sensitive {
         opacity: 0;
     }
-    .line, .lineUp , .lineDown  {
+    .line {
         fill: none;
         stroke-width: 1px;
     }
@@ -121,41 +113,41 @@
                             .nude(true);
         chartY.loader("#YearBarChar");
 
-        // var chartM = timeSeriesChart_curves()
-        //                     .width(30*4+50)
-        //                     .height(40)
-        //                     .dateParser("%Y-%m-%d %H:%M")
-        //                     .dateDomain([formatDate(Day_30), formatDate(new Date())])
-        //                     .station(station)
-        //                     .sensor(sensor)
-        //                     .toHumanDate(formulaConverter ('strDate', 'ISO'))
-        //                     .Color()
-        //                     .nude(true);
-        // chartM.loader("#MonthBarChar");
+        var chartM = timeSeriesChart_curves()
+                            .width(30*4+50)
+                            .height(40)
+                            .dateParser("%Y-%m-%d %H:%M")
+                            .dateDomain([formatDate(Day_30), formatDate(new Date())])
+                            .station(station)
+                            .sensor(sensor)
+                            .toHumanDate(formulaConverter ('strDate', 'ISO'))
+                            .Color()
+                            .nude(true);
+        chartM.loader("#MonthBarChar");
 
-        // var chartW = timeSeriesChart_curves()
-        //                     .width(7*4*4+50)
-        //                     .height(40)
-        //                     .dateParser("%Y-%m-%d %H:%M")
-        //                     .dateDomain([formatDate(Day_7), formatDate(new Date())])
-        //                     .station(station)
-        //                     .sensor(sensor)
-        //                     .toHumanDate(formulaConverter ('strDate', 'ISO'))
-        //                     .Color()
-        //                     .nude(true);
-        // chartW.loader("#WeekBarChar");
+        var chartW = timeSeriesChart_curves()
+                            .width(7*4*4+50)
+                            .height(40)
+                            .dateParser("%Y-%m-%d %H:%M")
+                            .dateDomain([formatDate(Day_7), formatDate(new Date())])
+                            .station(station)
+                            .sensor(sensor)
+                            .toHumanDate(formulaConverter ('strDate', 'ISO'))
+                            .Color()
+                            .nude(true);
+        chartW.loader("#WeekBarChar");
 
-        // var chartD = timeSeriesChart_curves()
-        //                     .width(24*4+50)
-        //                     .height(40)
-        //                     .dateParser("%Y-%m-%d %H:%M")
-        //                     .dateDomain([formatDate(Day_1), formatDate(new Date())])
-        //                     .station(station)
-        //                     .sensor(sensor)
-        //                     .toHumanDate(formulaConverter ('strDate', 'ISO'))
-        //                     .Color()
-        //                     .nude(true);
-        // chartD.loader("#TodayBarChar");
+        var chartD = timeSeriesChart_curves()
+                            .width(24*4+50)
+                            .height(40)
+                            .dateParser("%Y-%m-%d %H:%M")
+                            .dateDomain([formatDate(Day_1), formatDate(new Date())])
+                            .station(station)
+                            .sensor(sensor)
+                            .toHumanDate(formulaConverter ('strDate', 'ISO'))
+                            .Color()
+                            .nude(true);
+        chartD.loader("#TodayBarChar");
 
 
         var chartZoom = timeSeriesChart_curves()

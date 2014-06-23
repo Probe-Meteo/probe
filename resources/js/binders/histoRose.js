@@ -18,7 +18,7 @@ function include_histoRose(container, station, XdisplaySizePxl) {
                         // .ajaxUrl("/data/windRose")
                         .station(station)
                         .dateParser("%Y-%m-%d %H:%M:%S")
-                        .dateDomain(["2013-06-31T06:00:00", formatDate(new Date(), ' ')])
+                        .dateDomain(["2013-10-01T06:00:00", formatDate(new Date(), ' ')])
                         .rose(function(d) { return d.value; })
                         .onClickAction(function(d) { console.error (d); })
                         // .withAxis(false)
@@ -136,7 +136,7 @@ function timeSeriesChart_histoRose() {
                 // Draw hoverBox block (on mouse hover point view foreach rose)
                 var sensitive=hoverBox
                                 .append("rect")
-                                    .attr("class", "sensitive");
+                                    .attr("class", "sensitive"); 
                     
                 sensitive
                     .append("title");
@@ -210,7 +210,7 @@ function timeSeriesChart_histoRose() {
                             });
                 this.selectAll('.petals')
                     //.attr("x", function(d) {return xScale(d.period[0]); })
-                    .attr("transform", function(d) { return "translate(" + (xScale(d.period[1])+(xScale(d.period[1])-xScale(d.period[0]))/2) + ", 0)"; } );
+                    .attr("transform", function(d) {console.log(d); return "translate(" + (xScale(d.date)) + ", 0)"; } );
 
                 return this;
             }

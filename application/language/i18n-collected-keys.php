@@ -125,3 +125,5 @@ i18n('configuration-station.0.label');
 i18n('configuration-station.0.placeholder');
 i18n('cumul.title.metadata');
 i18n('cumul.description.metadata');
+i18n('sum.title.metadata');
+i18n('sum.description.metadata');

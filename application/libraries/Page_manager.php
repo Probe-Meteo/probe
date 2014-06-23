@@ -72,8 +72,8 @@ class Page_manager {
         $this->_CI->load->view('templates/header', $this->data);
         $this->_CI->load->view('templates/breadcrumb', $this->data);
         $this->_CI->load->view($page, $this->data);
-        $this->_CI->load->view('templates/footer', $this->data);
         $this->_CI->load->view('templates/js-libs', $this->data);
+        $this->_CI->load->view('templates/footer', $this->data);
     }
 
     public function setStatus(){

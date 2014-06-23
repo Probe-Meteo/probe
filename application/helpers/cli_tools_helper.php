@@ -30,6 +30,11 @@ function GetZoneOffset($zoneID) {
 		}
 		return '2012/01/01 00:00:00';
 	}
+	function round_date ($StrDate, $min=5) {
+		$prefix = substr($StrDate, 0, 14);
+		$min = str_pad((int)(substr($StrDate, 14, 2)/$min)*$min, 2, '0', STR_PAD_LEFT);
+		return $prefix.$min.':00';
+	}
 
 	/**
 	@description: converti une chaine binaire provenant de la VP2 en date Y/M/D
@@ -99,6 +104,10 @@ function GetZoneOffset($zoneID) {
 		// 0xC6 0xCE 0xA2 0x03 => 0xE2B4
 		// 0x88 0x19 0xb6 0x08 => 0xb0aa
 		global $TABLE_CRC16;
+		if (strlen($ptr)<=1) {
+			file_put_contents('log-CRC.log' , date($_date_fmt).' - [CRC] : len('.$ptr.')>'.strlen($ptr), FILE_APPEND);
+			return 0xffff;
+		}
 		$crc = 0x0000;
 		settype($crc, "integer");
 		for ($i = 0; $i < strlen($ptr); $i++) {

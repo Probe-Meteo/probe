@@ -126,8 +126,9 @@ class Station extends CI_Model {
             );
 		}
 		// on decode le password.
-		$confs[$item]['password'] = $this->encrypt->decode($confs[$item]['password']);
-
+		$confs[$item]['password'] = safe_b64decode($confs[$item]['password']);
+		// where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,array('3shGJYzKKT', safe_b64encode('3shGJYzKKT')));
+		
 		return $confs;
 	}
 
@@ -149,8 +150,8 @@ class Station extends CI_Model {
 		include_once(APPPATH.'models/'.$type.'.php');
 		$Current_WS = new $type($conf);
 		$Last_Arch = $Current_WS->get_Last_Date();
-		if (!isset($conf['time:archive:period'])
-			|| strtotime(date ("Y/m/d H:i:s")) > strtotime($Last_Arch) + $conf['time:archive:period']*60*2)
+		if (!isset($conf['Time:Archive:Period'])
+			|| strtotime(date ("Y/m/d H:i:s")) > strtotime($Last_Arch) + $conf['Time:Archive:Period']*60*2)
 		{
 			try {
 				if ( !$Current_WS->initConnection() )
@@ -163,6 +164,7 @@ class Station extends CI_Model {
 	
 				// on lit et sauve les configs
 				$readconf = end ($Current_WS->GetConfig ( ));
+				log_message('var', var_export($readconf, true));
 				foreach ($readconf as $key => $val) {
 					if (strpos($key, 'TR:Config:')!==FALSE) {
 						$ToStoreConfig[str_replace('TR:Config:', '', $key)] = $val;
@@ -255,7 +257,7 @@ class Station extends CI_Model {
 	la conf existe mais la valeur et modifier > UPDATE de la valeur et de la date */
 		where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__);
 		if (isset($conf['password']))
-			$conf['password'] = $this->encrypt->encode($conf['password']);
+			$conf['password'] = safe_b64encode($conf['password']);
 		foreach ($conf as $label => $value) {
 			$val = $this->db->escape($value);
 		// http://codeigniter.com/user_guide/database/queries.html

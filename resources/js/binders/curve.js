@@ -75,8 +75,6 @@ function timeSeriesChart_curves() {
         timeFormat = d3.time.format("%Y-%m-%dT%H:%M:%S"),
         dateParser = function(d) { return timeFormat.parse (d.date); },
         val = function(d) { return toHumanUnit(+d.val); },
-        valUp = function(d) { return toHumanUnit(+d.val); },
-        valDown = function(d) { return toHumanUnit(+d.val); },
         xPos=0,
         yPos=0,
         xScale = d3.time.scale().range([0, width]),
@@ -84,8 +82,6 @@ function timeSeriesChart_curves() {
         xAxis = d3.svg.axis().scale(xScale).orient("bottom").tickSize(4,6),
         yAxis = d3.svg.axis().scale(yScale).orient("left").ticks(4).tickSize(3,5),
         line = d3.svg.line().x(X).y(Y);
-        lineUp = d3.svg.line().x(X).y(YUp);
-        lineDown = d3.svg.line().x(X).y(YDown);
         // circle = d3.svg.circle().
 
     function chart(selection) {
@@ -100,20 +96,21 @@ function timeSeriesChart_curves() {
             data = rawdata.map(function(d, i) {
                 return {
                     date:dateParser.call(rawdata, d, i),
-                    val:val.call(rawdata, d, i),
-                    valUp:valUp.call(rawdata, d, i),
-                    valDown:valDown.call(rawdata, d, i)
+                    val:val.call(rawdata, d, i)
                 };
             });
+            //console.log(data);
+
 
             // Update the x-scale.
             xScale
                 .domain(d3.extent(data, function(d) { return d.date; }))
                 .range([0, width - margin.left - margin.right]);
+                // rangeRoundBands
 
             // Update the y-scale.
             yScale
-                .domain([d3.min(data, function(d) {return +d.valDown; }), d3.max(data, function(d) {return +d.valUp; })]) // [toHumanUnit(dataheader.min),toHumanUnit(dataheader.max)]
+                .domain(d3.extent(data, function(d) {return +d.val; })) // [toHumanUnit(dataheader.min),toHumanUnit(dataheader.max)]
                 .range([height - margin.top - margin.bottom, 0]);
 
             // Select the svg element, if it exists.
@@ -125,17 +122,11 @@ function timeSeriesChart_curves() {
             var gEnter = svg.enter()
                 .append("svg")
                     .attr("viewBox", "0 0 "+width+" "+height)
-                    // .attr("preserveAspectRatio", "xMinYMin")
+                    // // .attr("preserveAspectRatio", "xMinYMin")
                     .attr("width", function(){return nude ? width : "100%";})
                     .attr("height", height)
                     .append("g");
 
-            gEnter.append("path")
-                .attr("class", "lineUp")
-                .attr("stroke", lightColor);
-            gEnter.append("path")
-                .attr("class", "lineDown")
-                .attr("stroke", lightColor);
             gEnter.append("path")
                 .attr("class", "line")
                 .attr("stroke", darkColor);
@@ -145,28 +136,15 @@ function timeSeriesChart_curves() {
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
             g.updateCurve = function(){
                 yScale.domain(
-                    [d3.min(
+                    d3.extent(
                         data.filter(function(element, index, array){
                           return (element.date>=xScale.domain()[0] && element.date<=xScale.domain()[1]);
-                      }), function(d) {return +d.valDown; }),
-                    d3.max(
-                        data.filter(function(element, index, array){
-                          return (element.date>=xScale.domain()[0] && element.date<=xScale.domain()[1]);
-                      }), function(d) {return +d.valUp; })]);
+                      }), function(d) {return d.val; }));
+
                     // Update the line path.
                     this.select(".line")
                         .attr("d", line(data))
                         .attr("clip-path", "url(#" + md5 + ")");
-                    if (!nude){
-                        // Update the line path.
-                        this.select(".lineUp")
-                            .attr("d", lineUp(data))
-                            .attr("clip-path", "url(#" + md5 + ")");
-                        // Update the line path.
-                        this.select(".lineDown")
-                            .attr("d", lineDown(data))
-                            .attr("clip-path", "url(#" + md5 + ")");
-                    }
                     return this;
                 };
 
@@ -187,9 +165,17 @@ function timeSeriesChart_curves() {
                     .attr("x2", xScale.range()[1])
                     .attr("y2", (0));
                 g.drawAxis = function(){
-                        // chose the possition of x-Axis
-                        xPos = yScale.range()[0]+12;
-                        
+                                    // chose the possition of x-Axis
+                        // if (0<yScale.domain()[0]) {
+                            xPos = yScale.range()[0]+12;
+                        // }
+                        // else if (yScale.domain()[1]<0) {
+                        //     xPos = yScale.range()[1];
+                        // }
+                        // else {
+                        //     xPos = yScale(0);
+                        // }
+
                         if (withAxis) {
                         // Update the x-axis.
                             this.select(".x.axis")//.transition().duration(1000)
@@ -233,19 +219,15 @@ function timeSeriesChart_curves() {
                         .attr('x', legendXleft/2)
                         .text(Infos);
 
-                // on ajoute le spot sur la courbe
                 var spotSize = 8;
                 var spot=gEnter.append("g")
                     .attr("id", "spot")
                     .attr("opacity", 0)
-                    .on("mouseover", function () {
-                        d3.selectAll('.spotdetail').style("display", "block");
-                    })
                     .attr("x", 0)
                     .attr("y", 0);
                     spot.append('circle')
                         .attr("class", "Dot")
-                        .attr("stroke", '#000')
+                        .attr("stroke", darkColor)
                         .attr("r", spotSize/2)
                         .attr("cx", 0)
                         .attr("cy", 0);
@@ -255,28 +237,17 @@ function timeSeriesChart_curves() {
                         .attr("r", spotSize)
                         .attr("cx", 0)
                         .attr("cy", 0);
+                var tendance=gEnter.append('line')
+                        .attr("stroke", darkColor);
 
-                // on ajoute les valeur sur le spot
-                var legend = gEnter.append("g")
-                    .attr("class", "spotdetail")
-                    .attr("transform", "translate(0,0)")
-                    .attr("opacity", 0)
-                    .attr("fill", darkColor);
-                    var legendmax = legend.append('text')
-                        .attr("x", 5);
-                    var legendavg = legend.append('text')
-                        .attr("x", 0);
-                    var legendmin = legend.append('text')
-                        .attr("x", 5);
 
                 var Sensitive = gEnter.append("rect")
                     .attr("class", "sensitive")
                     .attr('width', width - margin.left - margin.right)
                     .attr('height', height - margin.top - margin.bottom);
 
-                var Y_val=0, timeoutID=null,
-                    X_px,Y_px,Y_Up,Y_Down;
-                Sensitive.on("mousemove", function() {
+                var Y_val=0, timeoutID=null;
+                                Sensitive.on("mousemove", function() {
                     // http://bl.ocks.org/mbostock/3902569
                     var bisectDate = d3.bisector(function(d) { return d.date; }).left;
                     var x0 = xScale.invert(d3.mouse(this)[0]),
@@ -289,32 +260,27 @@ function timeSeriesChart_curves() {
                         X_date = d.date;
                         X_px=Math.round(xScale(X_date));
                         Y_px=Math.round(yScale(Y_val));
-                        Y_Up=Math.round(yScale(d.valUp));
-                        Y_Down=Math.round(yScale(d.valDown));
-
-                        legend
-                            .attr("opacity", 1)
-                            .attr("transform", "translate("+(X_px+5)+","+Math.round(yScale(d.valUp))+")")
-                        legendmax
-                            .attr("y", 0)
-                            .text('↑    '+formatVal(d.valUp, 1));
-                        legendavg
-                            .attr("y", Y_px-Y_Up+0)
-                            .text('↔  '+formatVal(d.val, 1));
-                        legendmin
-                            .attr("y", Y_Down-Y_Up+0)
-                            .text('↓    '+formatVal(d.valDown, 1));
 
                         spot.attr("opacity", 1)
                             .attr("transform", "translate("+X_px+","+Y_px+")");
 
+                        if (trend){
+                            var steps = data.filter(function(element, index, array){
+                                    return (element.date>data[iSpot-trend].date && element.date<data[iSpot+trend].date);
+                                });
+                            var afine=linearRegression(steps);
+                            tendance
+                                .attr("x1", xScale(steps[0].date))
+                                .attr("y1", yScale(afine.slope*(steps[0].date.getTime()/60000)+afine.middle_intercept))
+                                .attr("x2", xScale(steps[steps.length-1].date))
+                                .attr("y2", yScale(afine.slope*(steps[steps.length-1].date.getTime()/60000)+afine.middle_intercept));
+                        }
                         legendDate.text(timeFormat(X_date,' '));
                         legendVal.text(formatVal(Y_val));
                     });
 
                 Sensitive.call(zm=d3.behavior.zoom().x(xScale).scaleExtent([1,1000]).on("zoom", function(){
                     spot.attr("opacity", 0);
-                    legend.attr("opacity", 0);
                     window.clearTimeout(timeoutID);
                     timeoutID = window.setTimeout(function(){zoom(g)}, 400);
                     // Update the line path.
@@ -326,6 +292,8 @@ function timeSeriesChart_curves() {
                      g.updateCurve()
                       .drawAxis ();
                 }));
+
+
 
                 gEnter.append("g").attr("class", "x axis");
                 gEnter.append("g").attr("class", "y axis");
@@ -342,9 +310,7 @@ function timeSeriesChart_curves() {
                     .text(toHumanUnit());
 
             } else { // for nude chart
-                var path = g.updateCurve().selectAll(".line,.lineUp,.lineDown");
-                    // pathUp = g.updateCurve(lineUp).select(".lineUp"),
-                    // pathDown = g.updateCurve(lineDown).select(".lineDown");
+                var path = g.updateCurve(line).select(".line");
                 var totalLength = path.node().getTotalLength();
 
                 path
@@ -354,21 +320,6 @@ function timeSeriesChart_curves() {
                     .duration(2000)
                     .ease("linear")
                     .attr("stroke-dashoffset", 0);
-
-                // pathUp
-                //   .attr("stroke-dasharray", totalLength + " " + totalLength)
-                //   .attr("stroke-dashoffset", totalLength)
-                //   .transition()
-                //     .duration(2000)
-                //     .ease("linear")
-                //     .attr("stroke-dashoffset", 0);
-                // pathDown
-                //   .attr("stroke-dasharray", totalLength + " " + totalLength)
-                //   .attr("stroke-dashoffset", totalLength)
-                //   .transition()
-                //     .duration(2000)
-                //     .ease("linear")
-                //     .attr("stroke-dashoffset", 0);
 
                 var legend = gEnter.append("g")
                     .attr("class", "legend")
@@ -396,6 +347,8 @@ function timeSeriesChart_curves() {
                     .text('↓ '+formatVal(toHumanUnit(dataheader.min), 1))
                     .append('title')
                         .text('↓ min:'+formatVal(toHumanUnit(dataheader.min), 2));
+
+
             }
             // Update the outer dimensions.
             // svg .attr("width", width)
@@ -412,20 +365,17 @@ function timeSeriesChart_curves() {
         // ces infos permettent de finir le parametrage de notre "Chart"
         // on charge les données et on lance le tracage
         console.TimeStep('Zoom');
-        d3.tsv( ajaxUrl + "?station="+ station +"&sensor="+ sensor +"&XdisplaySizePxl="+(width).toFixed(0)+"&Since="+formatDate(zmDomain[0],'T')+"&To="+formatDate(zmDomain[1],'T'),
+        d3.tsv( ajaxUrl + "?station="+ station +"&sensor="+ sensor +"&XdisplaySizePxl="+width+"&Since="+formatDate(zmDomain[0],'T')+"&To="+formatDate(zmDomain[1],'T'),
             function(data2add) {
                 console.TimeStep('load Data Zoom');
                 // console.log(data2add);
                 data2add = data2add.map(function(d, i) {
                     return {
                         date:dateParser.call(data2add, d, i),
-                        val:val.call(data2add, d, i),
-                        valUp:valUp.call(data2add, d, i),
-                        valDown:valDown.call(data2add, d, i)
+                        val:val.call(data2add, d, i)
                     };
                 });
-                console.log(data2add );
-
+                
                 data = data.filter(function(element, index, array){
                           return (element.date<data2add[0].date || element.date>data2add[data2add.length-1].date);
                       })
@@ -443,7 +393,7 @@ function timeSeriesChart_curves() {
             }
         );
 
-        d3.json( ajaxUrl + "?station="+ station +"&sensor="+ sensor +"&XdisplaySizePxl="+(width).toFixed(0)+"&infos=dataheader"+"&Since="+formatDate(zmDomain[0],'T')+"&To="+formatDate(zmDomain[1],'T'),
+        d3.json( ajaxUrl + "?station="+ station +"&sensor="+ sensor +"&XdisplaySizePxl="+width+"&infos=dataheader"+"&Since="+formatDate(zmDomain[0],'T')+"&To="+formatDate(zmDomain[1],'T'),
             function(header) {
                 console.TimeStep('load Header Zoom');
                 console.log(header);
@@ -460,23 +410,12 @@ function timeSeriesChart_curves() {
     }
     // The x-accessor for the path generator; xScale ∘ dateParser.
     function X(d) {
-        // console.log('X',+d.date,xScale(d.date),xScale.domain());
         return xScale(d.date);
     }
+
     // The x-accessor for the path generator; yScale ∘ Speed.
     function Y(d) {
-        // console.log('Y',+d.val,yScale(+d.val),yScale.domain());
         return yScale(+d.val);
-    }
-    // The x-accessor for the path generator; yScale ∘ Speed.
-    function YUp(d) {
-        // console.log('YUp',+d.valUp,yScale(+d.valUp));
-        return yScale(+d.valUp);
-    }
-    // The x-accessor for the path generator; yScale ∘ Speed.
-    function YDown(d) {
-        // console.log('YDown',+d.valDown,yScale(+d.valDown),yScale.domain());
-        return yScale(+d.valDown);
     }
 
     function formatVal(v, decimal) {
@@ -523,7 +462,7 @@ function timeSeriesChart_curves() {
         // on demande les infos importante au sujet de notre futur tracé
         // ces infos permettent de finir le parametrage de notre "Chart"
         // on charge les données et on lance le tracage
-        d3.tsv( ajaxUrl + "?station="+ station +"&sensor="+ sensor +"&XdisplaySizePxl="+((width - margin.left - margin.right)).toFixed(0)+"&Since="+dateDomain[0]+"&To="+dateDomain[1],
+        d3.tsv( ajaxUrl + "?station="+ station +"&sensor="+ sensor +"&XdisplaySizePxl="+(width - margin.left - margin.right)+"&Since="+dateDomain[0]+"&To="+dateDomain[1],
             function(data) {
                 // console.TimeStep('load Data');
                 // console.log(data);
@@ -539,8 +478,10 @@ function timeSeriesChart_curves() {
             }
         );
 
-        d3.json( ajaxUrl + "?station="+ station +"&sensor="+ sensor +"&XdisplaySizePxl="+((width - margin.left - margin.right)).toFixed(0)+"&infos=dataheader"+"&Since="+dateDomain[0]+"&To="+dateDomain[1],
+        d3.json( ajaxUrl + "?station="+ station +"&sensor="+ sensor +"&XdisplaySizePxl="+(width - margin.left - margin.right)+"&infos=dataheader"+"&Since="+dateDomain[0]+"&To="+dateDomain[1],
             function(data) {
+                // console.TimeStep('load Header');
+                // console.log(data);
 
                 chart
                     .dataheader(data)
@@ -548,6 +489,7 @@ function timeSeriesChart_curves() {
 
                 if (dataheader.sensor.SEN_FUNCTION.length>0)
                     eval(dataheader.sensor.SEN_FUNCTION );
+                // chart.val(xx);
 
                 if (ready) {
                     // console.log(data);
@@ -627,18 +569,6 @@ function timeSeriesChart_curves() {
         console.log(_);
         if (!arguments.length) return val;
         val = _;
-        return chart;
-    };
-    chart.valUp = function(_) {
-        console.log(_);
-        if (!arguments.length) return valUp;
-        valUp = _;
-        return chart;
-    };
-    chart.valDown = function(_) {
-        console.log(_);
-        if (!arguments.length) return valDown;
-        valDown = _;
         return chart;
     };
     chart.ajaxUrl = function(_) {

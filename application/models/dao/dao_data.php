@@ -13,11 +13,7 @@ class dao_data extends CI_Model {
         where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__);
         $this->dataDB = $this->load->database($station, TRUE);
         $this->SEN_LST = $this->sensor_list();
-        if (!empty($sensor)) {
-            $this->SEN_ID = $this->SEN_LST[$sensor];
-            $this->SEN_TABLE = tableOfSensor($sensor);
-            $this->SEN_DTL = $this->sensor_detail($this->SEN_ID);
-        }
+        $this->load_sensor($sensor);
     }
 
 /**
@@ -26,9 +22,24 @@ class dao_data extends CI_Model {
     * @param 
     * @param 
     */
-    function index(){
+    function load_sensor($sensor) {
         where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,func_get_args());
-        $query = "SELECT * FROM `TR_SENSOR` LIMIT 0 , 100";
+        if (!empty($sensor)) {
+            $this->SEN_ID = $this->SEN_LST[$sensor];
+            $this->SEN_TABLE = tableOfSensor($sensor);
+            $this->SEN_DTL = $this->sensor_detail($this->SEN_ID);
+        }
+    }
+
+/**
+return list of sensor for current station
+    * @
+    * @param 
+    * @param 
+    */
+    function index() {
+        where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,func_get_args());
+        $query = "SELECT * FROM `TR_SENSOR` ORDER BY SEN_SORT LIMIT 0 , 1000";
         $query_result = $this->dataDB->query($query);
         $brut = $query_result->result_array($query_result);
         // $reformated = null;
@@ -106,22 +117,29 @@ this functione estimate the recommanded granularity between 2 date for retunr 10
         // $GranularityForNbrValue = round((strtotime($last)-strtotime($first)) / $count * ($count/$nbr) / 60 , 1);
         $GranularityForNbrValue = (strtotime($last)-strtotime($first)) / $count * ($count/$nbr) / 60;
 
-        return array ('step'=>$GranularityForNbrValue<5 ? 5 : $GranularityForNbrValue, 'lastValue'=>$lastValue, 'first'=>$first, 'last'=>$last, 'count'=>$count, 'min'=>$min, 'max'=>$max, 'avg'=>$avg, 'sum'=>$sum);
+        $closest = null;
+        $stepmask = array(1,5,10,15,30,45,60,90,120,180,240,360,720,1440,2880,4320,10080,20160,432000);
+        foreach($stepmask as $item) {
+            if($closest == null || abs($GranularityForNbrValue - $closest) > abs($item - $GranularityForNbrValue)) {
+                $closest = $item;
+            }
+        }
+        return array ('step'=>$closest, 'lastValue'=>$lastValue, 'first'=>$first, 'last'=>$last, 'count'=>$count, 'min'=>$min, 'max'=>$max, 'avg'=>$avg, 'sum'=>$sum);
     }
 
 
 /**
-
+moyenne par intervale de Ganularite, (ameliorer en moienne flotante)
     * @
     * @param $since is the start date of result needed
     * @param $to is the end date of result needed
     * @param $Granularity
     */
-    function curve($since='2013-01-01T00:00', $to='2037-12-31T23:59', $Granularity=180) {
+    function curve($since='2013-01-01T00:00', $to='2037-12-31T23:59', $Granularity=180, $mode='AVG') {
         where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,func_get_args());
 
         $queryString = 
-        "SELECT FROM_UNIXTIME( TRUNCATE( UNIX_TIMESTAMP(`UTC`) / ".($Granularity*60).", 0)*".($Granularity*60)."+".($Granularity*60/2)." ) as UTC_grp , round(avg(value), 2) as `value`
+        "SELECT FROM_UNIXTIME( TRUNCATE( UNIX_TIMESTAMP(`UTC`) / ".($Granularity*60).", 0)*".($Granularity*60)."+".($Granularity*60/2)." ) as UTC_grp , round(".$mode."(value), 2) as `value`
             FROM  `".$this->SEN_TABLE."` 
             WHERE SEN_ID = ".$this->SEN_ID."
                 AND utc >= '$since'
@@ -129,7 +147,7 @@ this functione estimate the recommanded granularity between 2 date for retunr 10
         GROUP BY UTC_grp
         ORDER BY UTC_grp asc
         LIMIT 0 , 100000";
-
+        
         $query_result = $this->dataDB->query($queryString);
 
         $brut = $query_result->result_array($query_result);

@@ -51,8 +51,20 @@ class Data extends CI_Controller {
 
 		$this->Station = end($this->station->config($station));
 		// where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,array($this->SEN_DTL,$RAIN_COLLECTOR));
-		$this->dataReader = new dao_data($this->Station, $this->sensor);
+		$this->load_dataReader($this->Station, $this->sensor);
+	}
+
+
+/**
+load php class for dataReader
+	* @
+	* @param 
+	* @param 
+	*/
+	function load_dataReader($station, $sensor) {
+        where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,func_get_args());
 	    $RAIN_COLLECTOR = array(0=>0.01, 1=>0.2, 2=>0.1); 
+		$this->dataReader = new dao_data($station, $sensor);
 		$this->info = array("ISS"=>array(
 			"lat" => $this->Station['Geo:Latitude:NordValue'],
 			"lon" => $this->Station['Geo:Longitude:EstValue'],
@@ -62,11 +74,11 @@ class Data extends CI_Controller {
 			"wCup" => $this->Station['Wind:Cup:Large'],
 			"rConv" => $RAIN_COLLECTOR [$this->Station['Rain:Collector:Size']] ),
 		"sensor" => $this->dataReader->SEN_DTL);
+		return $this->dataReader;
 	}
 
-
 /**
-
+Set sensor for next request
 	* @
 	* @param 
 	* @param 
@@ -76,9 +88,8 @@ class Data extends CI_Controller {
 		return $this->sensor;
 	}
 
-
 /**
-
+return JSON list contain list of sensor for this station
 	* @
 	* @param 
 	* @param 
@@ -109,8 +120,6 @@ return an Json Obj of all currents value LOOP, LOOP2, HILOW
 		else $this->dl_dataHeader($dataHeader);
 	}
 
-
-
 /**
 make and download tsv curve of a sensor
 	* @
@@ -118,25 +127,92 @@ make and download tsv curve of a sensor
 	* @param lenght is the number of day
 	* @param is the sensor name (one or more)
 	*/
-	function curve(){
-		$dataHeader = $this->dataReader->estimate ( $this->Since, $this->To, $this->XdisplaySizePxl/2 );
-		where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,array($this->Station['_name'], $this->Since,	$this->To,	$this->XdisplaySizePxl, $dataHeader));
+	function curve() {
+        where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,func_get_args());
+			// for real sensor, we read directly data in EAV table
+			$tsv = '';
 
+			if ($this->info['sensor']['SEN_ID']>0) {
+				$dataHeader = $this->dataReader->estimate ( $this->Since, $this->To, $this->XdisplaySizePxl/2 );
+				// where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,array($this->Station['_name'], $this->Since,	$this->To,	$this->XdisplaySizePxl, $dataHeader));
+				if (!$this->infos) {
 
-		if (!$this->infos) {
-			$data = $this->dataReader->curve ($this->Since, $this->To, $dataHeader['step'] );
+					$arrayStrRaw = $this->curveRaw( $this->sensor, $dataHeader['step'], $this->info['sensor']['SEN_GRP_MODE'] );
+					array_walk(	$arrayStrRaw, 'mergeKeyValue' , '');
+					$tsv = implode( "\n", $arrayStrRaw );
 
-			$j = count($data);
-		    $tsv = '';
-		    for ($i=0;$i<$j;$i++) {
-				$tsv .= substr(	$data[$i]['UTC_grp'],0,-3)."\t".
-								$data[$i]['value']."\n";
+					$this->dl_tsv ("date\tval\n".trim($tsv,"\n"));
+				}
+				else {
+					$this->dl_dataHeader($dataHeader);
+				}
 			}
+			// for virtual sensor, we read data for each sensor dependance
+			else {
+				// where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,array($this->Station['_name'], $this->Since,	$this->To,	$this->XdisplaySizePxl, $dataHeader));
+				$this->dataReader->load_sensor('TA:Arch:Temp:Out:Average');
+				$dataHeader = $this->dataReader->estimate ( $this->Since, $this->To, $this->XdisplaySizePxl/2 );
+				if (!$this->infos) {
+					// var_export($this->info['sensor']['SEN_DEPENDENCY_JSON']);
+					$sensor_lst = json_decode($this->info['sensor']['SEN_DEPENDENCY_JSON'], true);
+					$title="date";
 
-			$this->dl_tsv ("date\tval\n".trim($tsv,"\n"));
-	        $this->dl_tsv ($data);
+					foreach ($sensor_lst as $key => $sensor) {
+						if ($sensor['sensor']!='TIME_AUTO') {
+							// ne gere pas le decalage des dates.
+							// devrai etre deplace dans dao_data
+							$this->dataReader->load_sensor($sensor['sensor']);
+							$title .= "\t".$key;
+							$data[$key] = $this->dataReader->curve ($this->Since, $this->To, $dataHeader['step'], $sensor['SQL_GRP_MODE']);
+							ob_clean();
+						} else {
+							$GranularityForNbrValue = (strtotime($this->To) - strtotime($this->Since)) / ($this->XdisplaySizePxl/2);
+					        $closest = null;
+					        $stepmask = array(1,5,10,15,30,45,60,90,120,180,240,360,720,1440,2880,4320,10080,20160,432000);
+					        foreach($stepmask as $item) {
+					            if($closest == null || abs($GranularityForNbrValue - $closest) > abs($item - $GranularityForNbrValue)) {
+					                $closest = $item;
+					            }
+					        }
+					        for($i=strtotime($this->Since); $i<strtotime($this->To); $i+=$closest)
+					        	$tsv .= date('Y-m-d H:i',$i)."\n";
+					        $this->dl_tsv ('date'."\n".trim($tsv,"\n"));
+						}
+					}
+
+					foreach ($data[$key] as $i => $value) {
+						$tsv .= substr($data[$key][$i]['UTC_grp'],0,-3);
+						foreach ($data as $sensorData) {
+							$tsv .= "\t".$sensorData[$i]['value'];
+						}
+						$tsv .= "\n";
+					}
+					$this->dl_tsv ($title."\n".trim($tsv,"\n"));
+				}
+				else {
+					$this->dl_dataHeader($dataHeader);
+				}
+			}
+	}
+/**
+make and download tsv curve of a sensor
+	* @
+	* @param since is the start date of result needed
+	* @param lenght is the number of day
+	* @param is the sensor name (one or more)
+	*/
+	function curveRaw($sensor, $step, $grpMode) {
+        where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,func_get_args());
+		// for real sensor, we read directly data in EAV table
+		$this->dataReader->load_sensor($sensor);
+
+		$data = $this->dataReader->curve ($this->Since, $this->To, $step, $this->info['sensor']['SEN_GRP_MODE']);
+
+		foreach ($data as $value) {
+			$Raw[substr($value['UTC_grp'],0,-3)] = $value['value'];
+//			$Raw[$value['UTC_grp']] = $value['value'];
 		}
-		else $this->dl_dataHeader($dataHeader);
+		return $Raw;
 	}
 
 /**
@@ -162,7 +238,7 @@ make and download tsv sum value of a sensor
 			}
 
 			$this->dl_tsv ("date\tval\n".trim($tsv,"\n"));
-	        $this->dl_tsv ($data);
+	        // $this->dl_tsv ($data);
 		}
 		else $this->dl_dataHeader($dataHeader);
 	}
@@ -203,6 +279,7 @@ make and download json bracketCurve of a sensor
 		}
 		else $this->dl_dataHeader($dataHeader);
 	}
+
 /**
 make and download json wind data
 	* @
@@ -221,6 +298,7 @@ make and download json wind data
 		}
 		else $this->dl_dataHeader($dataHeader);
 	}
+
 /**
 make and download json wind data for vectorial HairChart
 	* @
@@ -241,7 +319,8 @@ make and download json wind data for vectorial HairChart
 								$data[$i]['AvgSpeed']."\t".
 								$data[$i]['AvgDirection']."\t".
 								$data[$i]['x']."\t".
-								$data[$i]['y']."\n";
+								$data[$i]['y'].
+								"\n";
 			}
 
 			$this->dl_tsv ("date\tspeed\tangle\tx\ty\n".trim($tsv,"\n"));
@@ -290,12 +369,10 @@ Download after convert data structure to json object
 	*/
 	private function dl_json ($data) {
 		$json = json_encode(array_merge($this->info, array('data' => $data)), JSON_NUMERIC_CHECK);
-		// ob_clean();
 		@ob_end_clean();
 		header_remove();
 		force_download('data.json', $json);
 	}
-
 
 /**
 Download after convert data structure to json object
@@ -304,10 +381,10 @@ Download after convert data structure to json object
 	*/
 	private function dl_dataHeader ($dataHeader) {
 		$json = json_encode(array_merge($this->info, $dataHeader), JSON_NUMERIC_CHECK);
-		// ob_clean();
 		@ob_end_clean();
 		header_remove();
-		force_download('data.json', $json);		}
+		force_download('data.json', $json);
+	}
 
 /**
 Download tsv file
