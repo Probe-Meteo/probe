@@ -151,7 +151,12 @@ make and download tsv curve of a sensor
 			else {
 				// where_I_Am(__FILE__,__CLASS__,__FUNCTION__,__LINE__,array($this->Station['_name'], $this->Since,	$this->To,	$this->XdisplaySizePxl, $dataHeader));
 				$this->dataReader->load_sensor('TA:Arch:Temp:Out:Average');
+
 				$dataHeader = $this->dataReader->estimate ( $this->Since, $this->To, $this->XdisplaySizePxl/2 );
+				$dataHeader['min']=null;
+				$dataHeader['avg']=null;
+				$dataHeader['max']=null;
+
 				if (!$this->infos) {
 					// var_export($this->info['sensor']['SEN_DEPENDENCY_JSON']);
 					$sensor_lst = json_decode($this->info['sensor']['SEN_DEPENDENCY_JSON'], true);
