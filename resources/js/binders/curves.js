@@ -113,8 +113,16 @@ function timeSeriesChart_curves() {
 
             // Update the y-scale.
             yScale
-                .domain([d3.min(data, function(d) {return +d.valDown; }), d3.max(data, function(d) {return +d.valUp; })]) // [toHumanUnit(dataheader.min),toHumanUnit(dataheader.max)]
+                .domain([
+                            d3.min(data, function(d) {
+                                return d3.min([+d.valUp, +d.val, +d.valDown]);
+                            }),
+                            d3.max(data, function(d) {
+                                return d3.max([+d.valUp, +d.val, +d.valDown]);
+                            })
+                        ]) // [toHumanUnit(dataheader.min),toHumanUnit(dataheader.max)]
                 .range([height - margin.top - margin.bottom, 0]);
+            // console.log(yScale.domain());
 
             // Select the svg element, if it exists.
             var svg = d3.select(this).selectAll("svg").data([{date:0,val:yScale.domain()[0]},{date:new Date(),val:yScale.domain()[0]}])
@@ -148,11 +156,17 @@ function timeSeriesChart_curves() {
                     [d3.min(
                         data.filter(function(element, index, array){
                           return (element.date>=xScale.domain()[0] && element.date<=xScale.domain()[1]);
-                      }), function(d) {return +d.valDown; }),
+                      }), function(d) {
+                            if (!nude) return d3.min([+d.valUp, +d.val, +d.valDown]);
+                            else return +d.val;
+                        }),
                     d3.max(
                         data.filter(function(element, index, array){
                           return (element.date>=xScale.domain()[0] && element.date<=xScale.domain()[1]);
-                      }), function(d) {return +d.valUp; })]);
+                      }), function(d) {
+                            if (!nude) return d3.max([+d.valUp, +d.val, +d.valDown]);
+                            else return +d.val;
+                        })]);
                     // Update the line path.
                     this.select(".line")
                         .attr("d", line(data))
@@ -225,9 +239,14 @@ function timeSeriesChart_curves() {
                     .attr('x', legendXleft)
                     .text(formatVal(data[data.length-1].val));
 
-                var Infos = function() {return "Min : "+formatVal(toHumanUnit(dataheader.min), 2)+
-                "  —  Average : "+formatVal(toHumanUnit(dataheader.avg), 2)+
-                "  —  Max : "+formatVal(toHumanUnit(dataheader.max), 2);},
+
+                var Infos = function() {
+                    var displayed = data.filter(function(element, index, array){
+                              return (element.date>=xScale.domain()[0] && element.date<=xScale.domain()[1]);
+                          });
+                    return "Min : "+formatVal(d3.min(displayed, function(d) { return +d.val;}), 2)+
+                "  —  Average : "+formatVal(d3.mean(displayed, function(d) { return +d.val;}), 2)+
+                "  —  Max : "+formatVal(d3.max(displayed, function(d) { return +d.val;}), 2);},
                     legendSum = legend.append('text')
                         .attr("class","Infos")
                         .attr('x', legendXleft/2)
@@ -342,9 +361,8 @@ function timeSeriesChart_curves() {
                     .text(toHumanUnit());
 
             } else { // for nude chart
-                var path = g.updateCurve().selectAll(".line,.lineUp,.lineDown");
-                    // pathUp = g.updateCurve(lineUp).select(".lineUp"),
-                    // pathDown = g.updateCurve(lineDown).select(".lineDown");
+                // var path = g.updateCurve().selectAll(".line,.lineUp,.lineDown");
+                var path = g.updateCurve().selectAll(".line");
                 var totalLength = path.node().getTotalLength();
 
                 path
@@ -375,27 +393,27 @@ function timeSeriesChart_curves() {
                     .attr("transform", "translate("+(width - margin.right+2)+",0)")
                     // .attr("transform", "translate(0,"+(height - margin.bottom +5)+")")
                     .attr("fill", darkColor);
-
+                var max=d3.max(data, function(d) { return +d.val;})
                 var legendmax = legend.append('text')
                     .attr("class","legend_max")
                     .attr("y", (6))
-                    .text('↑ '+formatVal(toHumanUnit(dataheader.max), 1))
+                    .text('↑ '+formatVal(max, 1))
                     .append('title')
-                        .text('↑ max:'+formatVal(toHumanUnit(dataheader.max), 2));
-
+                        .text('↑ max:'+formatVal(max, 2));
+                var mean=d3.mean(data, function(d) { return +d.val;})
                 var legendavg = legend.append('text')
                     .attr("class","legend_avg")
                     .attr("y", (height+6)/2)
-                    .text('↔ '+formatVal(toHumanUnit(dataheader.avg), 1))
+                    .text('↔ '+formatVal(mean, 1))
                     .append('title')
-                        .text('↔ Average:'+formatVal(toHumanUnit(dataheader.avg), 2));
-
+                        .text('↔ Average:'+formatVal(mean, 2));
+                var min=d3.min(data, function(d) { return +d.val;})
                 var legendmin = legend.append('text')
                     .attr("class","legend_min")
                     .attr("y", (height-1))
-                    .text('↓ '+formatVal(toHumanUnit(dataheader.min), 1))
+                    .text('↓ '+formatVal(min, 1))
                     .append('title')
-                        .text('↓ min:'+formatVal(toHumanUnit(dataheader.min), 2));
+                        .text('↓ min:'+formatVal(min, 2));
             }
             // Update the outer dimensions.
             // svg .attr("width", width)
