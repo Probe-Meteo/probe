@@ -13,21 +13,14 @@
 
 ?>
 <div id="resizable" class="ui-widget-content">
-    <h4 class="ui-widget-header">Average Curve Historical Chart</h4>
+    <!-- <h4 class="ui-widget-header" id="title">Average Curve Historical Chart</h4> -->
     <p>
-    This Year <span id="YearBarChar">
-        <!-- d3 content should be -dynamically- placed here -->
-    </span>
-    This Month <span id="MonthBarChar">
-        <!-- d3 content should be -dynamically- placed here -->
-    </span>
-    This Week <span id="WeekBarChar">
-        <!-- d3 content should be -dynamically- placed here -->
-    </span>
-    Today <span id="TodayBarChar">
-        <!-- d3 content should be -dynamically- placed here -->
-    </span></p>
-    <div id="barSvgArea"></div>
+    <div id="barSvgArea"></div></br></br>
+        <b>This Year </b><span id="YearBarChar"></span>
+        <b>This Month </b><span id="MonthBarChar"></span>
+        <b>This Week </b><span id="WeekBarChar"></span>
+        <b>Today </b><span id="TodayBarChar"></span>
+    </p>
 </div>
 
 <style>
@@ -42,7 +35,7 @@
             1px 1px 1px #FFF, 1px -1px 1px #FFF, -1px -1px 1px #FFF, -1px 1px 1px #FFF,
             0 2px 1px #FFF, 2px 0 1px #FFF, 0 -2px 1px #FFF, -2px 0 1px #FFF;
     }
-/*    #spot:hover + .spotdetail {
+    /*    #spot:hover + .spotdetail {
         opacity: 1;
     }*/
     .spot {
@@ -108,22 +101,22 @@
         var Day_365 = new Date();
         Day_365.setDate(Day_365.getDate() -365);
 
-        // on definie notre objet au plus pres de notre besoin.
-        var chartY = timeSeriesChart_curves()
-                            .width(52*4+50)
-                            .height(40)
-                            .dateParser("%Y-%m-%d %H:%M")
-                            .dateDomain([formatDate(Day_365), formatDate(new Date())])
-                            .station(station)
-                            .sensor(sensor)
-                            .toHumanDate(formulaConverter ('strDate', 'ISO'))
-                            .Color()
-                            .nude(true);
-        chartY.loader("#YearBarChar");
+        // // on definie notre objet au plus pres de notre besoin.
+        // var chartY = timeSeriesChart_curves()
+        //                     .width(52*4*2+50)
+        //                     .height(50)
+        //                     .dateParser("%Y-%m-%d %H:%M")
+        //                     .dateDomain([formatDate(Day_365), formatDate(new Date())])
+        //                     .station(station)
+        //                     .sensor(sensor)
+        //                     .toHumanDate(formulaConverter ('strDate', 'ISO'))
+        //                     .Color()
+        //                     .nude(true);
+        // chartY.loader("#YearBarChar");
 
         // var chartM = timeSeriesChart_curves()
-        //                     .width(30*4+50)
-        //                     .height(40)
+        //                     .width(30*4*2+50)
+        //                     .height(50)
         //                     .dateParser("%Y-%m-%d %H:%M")
         //                     .dateDomain([formatDate(Day_30), formatDate(new Date())])
         //                     .station(station)
@@ -133,34 +126,34 @@
         //                     .nude(true);
         // chartM.loader("#MonthBarChar");
 
-        // var chartW = timeSeriesChart_curves()
-        //                     .width(7*4*4+50)
-        //                     .height(40)
-        //                     .dateParser("%Y-%m-%d %H:%M")
-        //                     .dateDomain([formatDate(Day_7), formatDate(new Date())])
-        //                     .station(station)
-        //                     .sensor(sensor)
-        //                     .toHumanDate(formulaConverter ('strDate', 'ISO'))
-        //                     .Color()
-        //                     .nude(true);
-        // chartW.loader("#WeekBarChar");
+        var chartW = timeSeriesChart_curves()
+                            .width(7*4*4*2+50)
+                            .height(50)
+                            .dateParser("%Y-%m-%d %H:%M")
+                            .dateDomain([formatDate(Day_7), formatDate(new Date())])
+                            .station(station)
+                            .sensor(sensor)
+                            .toHumanDate(formulaConverter ('strDate', 'ISO'))
+                            .Color()
+                            .nude(true);
+        chartW.loader("#WeekBarChar");
 
-        // var chartD = timeSeriesChart_curves()
-        //                     .width(24*4+50)
-        //                     .height(40)
-        //                     .dateParser("%Y-%m-%d %H:%M")
-        //                     .dateDomain([formatDate(Day_1), formatDate(new Date())])
-        //                     .station(station)
-        //                     .sensor(sensor)
-        //                     .toHumanDate(formulaConverter ('strDate', 'ISO'))
-        //                     .Color()
-        //                     .nude(true);
-        // chartD.loader("#TodayBarChar");
+        var chartD = timeSeriesChart_curves()
+                            .width(24*4*2+50)
+                            .height(50)
+                            .dateParser("%Y-%m-%d %H:%M")
+                            .dateDomain([formatDate(Day_1), formatDate(new Date())])
+                            .station(station)
+                            .sensor(sensor)
+                            .toHumanDate(formulaConverter ('strDate', 'ISO'))
+                            .Color()
+                            .nude(true);
+        chartD.loader("#TodayBarChar");
 
 
         var chartZoom = timeSeriesChart_curves()
                             .width($('#barSvgArea').width()-16)
-                            .height(200)
+                            .height(300)
                             .dateParser("%Y-%m-%d %H:%M")
                             .dateDomain([formatDate(Day_365), formatDate(new Date())])
                             .station(station)
