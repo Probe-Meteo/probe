@@ -45,7 +45,7 @@
                     >
                     <?=sprintf('%s', i18n('install-dbms.engine:sqlite.label')) ?>
                 </label>
-                <?
+                <?php
                 /*
                 <label class="control-label inline" for="dbms-engine-postgresql">
                     <input id="dbms-engine-postgresql"
@@ -156,7 +156,7 @@
 		<?=form_submit('configure', i18n('install-dbms.configure.label'), 'class="btn btn-primary pull-right"')?>
 	</div>
 <?=form_close()?>
-<?
+<?php
 // <p>
 // Problème de connexion localhost vs. any host :
 // 1. accès depuis le serveur à un utilisateur sur @'%'. Il faut supprimer les utilisateur anonyme (cf. ci-dessus). sur @'localhost' pas de soucis.
